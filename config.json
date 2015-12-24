@@ -1,0 +1,18 @@
+var config = {
+	baseLayers:[
+		{
+			url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{y}.png",
+			type: "TMS"
+		}/*,{
+			url: "'http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png",
+			type: "TMS"
+		}*/
+	],
+	layers: [
+		{
+			url: "http://geo.flevoland.nl/arcgis/services/Groen_Natuur/Agrarische_Natuur/MapServer/WMSServer",
+			type: "WMS",
+			layers: ['0', '1', '2', '3', '4']
+		}
+	]
+};

@@ -1,5 +1,6 @@
 function vbmap(){
-	this.init = function (){
+	this.map  = null,
+	this.init = function (config){
 		var res = [3440.640, 1720.320, 860.160, 430.080, 215.040, 107.520, 53.760, 26.880, 13.440, 6.720, 3.360, 1.680, 0.840, 0.420];
 
 		var RD2 = new L.Proj.CRS.TMS(
@@ -11,47 +12,41 @@ function vbmap(){
 		    });
 
 
-		var map = L.map('map', 
-			{
-				crs:RD2
-			}).setView([52.5, 5.8], 3);
-		/*
-		L.tileLayer('http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png', {
-		    tms: true
-		}).addTo(map);
-		*/
-		L.tileLayer('http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{y}.png', {
+		this.map = L.map('map', 
+		{
+			crs:RD2
+		}).setView([52.5, 5.8], 3);
+
+		this.initLayers(config.baseLayers);
+		this.initLayers(config.layers);
+	},
+
+	this.initLayers = function(layers){
+		for (var i = 0; i < layers.length; i++) {
+			var layer = layers[i];
+			if ( layer.type === "TMS"){
+				this.createTMS(layer);
+			} else if(layer.type === "WMS"){
+				this.createWMS(layer);
+			}
+		}
+	},
+
+	this.createWMS = function(layer){
+		L.tileLayer.wms(layer.url,{
+			layers:layer.layers,
+			transparent: true,
+			format: 'image/png'
+		}).addTo(this.map);
+	},
+
+	this.createTMS = function(layer){
+		L.tileLayer(layer.url, {
 		    tms: true,
 		    minZoom: 3,
 			opacity: 0.5,
 		    maxZoom: 13,
 		    continuousWorld: true
-		}).addTo(map);
-		/*
-		L.tileLayer.wms("http://geo.flevoland.nl/arcgis/services/Groen_Natuur/Agrarische_Natuur/MapServer/WMSServer",{
-			layers:['0', '1', '2', '3', '4'],
-			transparent: true,
-			format: 'iamge/png'
-		}).addTo(map);
-		*/
-		/*
-		L.esri.dynamicMapLayer({
-			url: "http://geo.flevoland.nl/arcgis/rest/services/Groen_Natuur/Agrarische_Natuur/MapServer",
-		    "layers": ["0"],
-		    imageSR: 28992
-		}).addTo(map);
-
-		*/
-		/*L.esri.dynamicMapLayer({
-			url: "http://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Stratenkaart/MapServer",
-			opacity: 0.5
-		  // "layers": ["0"]
-		}).addTo(map);
-		*/
-		/*L.esri.dynamicMapLayer({
-			url: "http://ags101.prvgld.nl/arcgis/rest/services/Algemeen/Ondergrond_grijs/MapServer",
-		    "layers": ["0"],
-		    transparent: true
-		}).addTo(map);*/
+		}).addTo(this.map);
 	}
 }

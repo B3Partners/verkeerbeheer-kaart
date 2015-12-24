@@ -9,13 +9,14 @@
 	<script src="libs/proj4-compressed.js"></script>
 	<script src="libs/proj4leaflet.js"></script>
 	<script src="libs/esri-leaflet.js"></script>
+	<script src="config.json"></script>
 	<script src="vbmap.js"></script>
 </head>
 <body>
 	<div id="map"></div>
 	<script type="text/javascript">
 		var vbmap = new vbmap();
-		vbmap.init();
+		vbmap.init(config);
 	</script>
 </body>
 </html>
