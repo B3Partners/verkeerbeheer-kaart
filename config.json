@@ -4,15 +4,44 @@ var config = {
 			url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{y}.png",
 			type: "TMS"
 		}/*,{
-			url: "'http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png",
+			url: "http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png",
 			type: "TMS"
+		},{
+			url:"http://webservices.gbo-provincies.nl/lufo/services/wms?",
+			type:"WMS",
+			layers : ["actueel_winter"]
+
 		}*/
 	],
 	layers: [
-		{
-			url: "http://geo.flevoland.nl/arcgis/services/Groen_Natuur/Agrarische_Natuur/MapServer/WMSServer",
+	/*	{
+			url: "http://ags101.prvgld.nl/arcgis/services/IMGEO/imgeo_wms/MapServer/WMSServer",
+		//	url: "http://ags101.prvgld.nl/arcgis/rest/services/IMGEO/imgeo_wms/MapServer/WMSServer",
 			type: "WMS",
-			layers: ['0', '1', '2', '3', '4']
+			layers: ['0', '1', '2', '3', '4','5','6','7','8','9','10','11','12','13','14','15','16']
+		},*/{
+			url: "http://localhost/cgi-bin/mapserv?map=/mnt/data/maps/verkeersbeheer.map",
+			layers: ["gemeentes"],
+			type: "WMS"
 		}
+		/*{
+			url : "http://ags101.prvgld.nl/arcgis/rest/services/IMGEO/imgeo_wms/MapServer",
+			type: "ESRI"
+		}*/
 	]
 };
+
+/**
+
+
+ 
+
+Topografische ondergrond Arcgis rest: http://ags101.prvgld.nl/arcgis/rest/services/Algemeen/Ondergrond_grijs/MapServer
+
+Topografische ondergrond TMS (PDOK): zie overzicht op https://www.pdok.nl/nl/producten/pdok-services/overzicht-urls/t
+
+Basiskaart provinciale wegen Gelderland (IMGEO): http://ags101.prvgld.nl/arcgis/rest/services/IMGEO/imgeo_wms/MapServer 
+
+Luchtfoto (alleen voor intern gebruik bij provincies!): http://webservices.gbo-provincies.nl/lufo/services/wms?
+
+ */
