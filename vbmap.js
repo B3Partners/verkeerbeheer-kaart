@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 B3Partners B.V.
+ * Copyright (C) 2015-2016 B3Partners B.V.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,113 +21,184 @@
   */
 
 function vbmap(){
-	this.map  = null,
-	this.layers = null,
-	this.baseLayers = null,
+    this.map = null,
+    this.config = null,
 
-	this.currentLocation = null,
-	/**
-	 * Initialize the map: create the map object, and the layers.
-	 * @params config Configuration object. See the header in config.json for the specification of the file.
-	 */
-	this.init = function (config){
-		this.initMap(config);
+    this.init = function(config){
+        this.config = config;
+        this.initComponent();
+    },
 
-		this.baseLayers = this.initLayers(config.baseLayers);
-		this.layers = this.initLayers(config.layers);
-		this.initControls(config);
-	},
+    this.initComponent = function (){
+        proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
+        proj4.defs('http://www.opengis.net/gml/srs/epsg.xml#28992', proj4.defs('EPSG:28992'));
+      
+        var extentAr = [-285401.0,22598.0,595401.0,903401.0];
+        var resolutions = [3440.64, 1720.32, 860.16, 430.08, 215.04, 107.52, 53.76, 26.88, 13.44, 6.72, 3.36, 1.68, 0.84, 0.42,0.21,0.105];
+        var matrixIds = [];
+        for (var z = 0; z < resolutions.length; ++z) {
+            matrixIds[z] = 'EPSG:28992:' + z;
+        }
+        var projection = ol.proj.get('EPSG:28992');
+        projection.setExtent(extentAr);
 
-	this.getLocation = function(returnFunction){
-		this.map.once('locationfound', returnFunction, this)
-		this.map.locate({
-			enableHighAccuracy: true
-		});
-	},
+        var layers = [];
 
-	this.initControls = function(config){
-		this.map.addControl( new L.Control.Gps({autoActive:false, maxZoom: 14, setView:true}) );
+        this.initTMSLayers(this.config.tms_layers, layers, extentAr, projection);
+        this.initWMSLayers(this.config.wms_layers,layers);
+        this.initWFSLayers(this.config.wfs_layers,layers);
 
-		L.control.layers(this.baseLayers, null).addTo(this.map);
-	},
+        this.createMap(layers,this.config.initial_zoom || 2, extentAr,projection, this.config.map_id);
+        this.initWMTSLayers(this.config.wmts_layers,layers, extentAr, projection, resolutions, matrixIds);
 
-	this.initMap = function(config){
-		var res = [3440.640, 1720.320, 860.160, 430.080, 215.040, 107.520, 53.760, 26.880, 13.440, 6.720, 3.360, 1.680, 0.840, 0.420,0.210,0.105,0.052,0.025,0.012,0.006,0.003];
-	
-		//var res = [3440.6399,1720.3199,860.1599,430.0799,215.0399,107.5199,53.7599,26.8799,13.4399,6.7199,3.3599,1.6799,0.8400,0.4200,0.2100,0.1050,0.0525,0.0262,0.0131,0.0065,0.0032,0.0016];
-		var rd = new L.Proj.CRS.TMS(
-	        'EPSG:28992',
-	        '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +towgs84=565.2369,50.0087,465.658,-0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +no_defs', [-285401.92, 22598.08, 595401.9199999999, 903401.9199999999], 
-	    {
-	            transformation: new L.Transformation(1,0,-1,0),
-	            resolutions: res
-	    });
+        this.initTools(this.config.tools);
+  
+    },
 
-		this.map = L.map('map', 
-		{
-			crs:rd
-		}).setView([51.95085,5.78016],6);
-	},
+    this.initTMSLayers = function(tmslayers,layers,extentAr, projection){
+        for(var i = 0 ; i < tmslayers.length; i++){
+            var layer = tmslayers[i];
+            var tms = this.initTMSLayer(layer,extentAr, projection);
+            layers.push(tms);
+        }
+    },
 
-	/**
-	 * Initialize all the layers given in the layers object. This function delegates all the subsequent JSONObjects with layer information to the correct functions.
-	 */
-	this.initLayers = function(layers){
-		var layerObjects = {};
-		for (var i = 0; i < layers.length; i++) {
-			var layer = layers[i];
-			if ( layer.type === "TMS"){
-				this.createTMS(layer);
-			} else if(layer.type === "WMS"){
-				this.createWMS(layer);
-			}else if(layer.type === "ESRI"){
-				this.createEsriLayer(layer);
-			}else{
-				throw 'Layer type ' + layer.type + ' does not exist';
-			}
-			layerObjects[layer.label] = layer.instance;
-		}
-		return layerObjects;
-	},
+    this.initTMSLayer = function(layer,extentAr, projection){
+        var openbasiskaartSource = new ol.source.XYZ({
+            crossOrigin: 'anonymous',
+            extent: extentAr,
+            projection: projection,
+            url: layer // 'http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png'
+        });
+        var tms = new ol.layer.Tile({
+            source: openbasiskaartSource
+        });
+        return tms;
+    },
+   
+    this.initWMTSLayers = function(layersConfig, layers, extentAr, projection, resolutions, matrixIds){
+        for (var i = 0 ; i < layersConfig.length ;i++){
+            var config = layersConfig[0];
+            var layer = this.initWMTSLayer(config, extentAr, projection, resolutions, matrixIds);
+            layers.push(layer);
+        }
+    },
 
-	/**
-	 * Create a WMS layer, and add it to the map
-	 */
-	this.createWMS = function(layer){
-		var l = L.tileLayer.wms(layer.url,{
-			layers:layer.layers,
-			transparent: true,
-			format: 'image/png'
-		});
-		l.addTo(this.map);
-		layer.instance = l;
-	},
+    this.initWMTSLayer = function (layerConfig, extentAr, projection, resolutions, matrixIds){
+        var me = this;
+        me.projection = projection;
+        $.ajax(layerConfig.url).then(function(response) {
+            var result = me.wmtsParser.read(response);
+            var options = ol.source.WMTS.optionsFromCapabilities(result,
+              {layer: layerConfig.layer, matrixSet: layerConfig.matrixSet, crossOrigin: null});
 
-	/**
-	 * Create a TMS layer, and add it to the map.
-	 */
-	this.createTMS = function(layer){
-		var l = L.tileLayer(layer.url, {
-		    tms: true,
-		    minZoom: 0,
-			opacity: layer.opacity ? layer.opacity : 1.0,
-		   // maxZoom: 13,
-		    continuousWorld: true
-		});
-		l.addTo(this.map);
-		layer.instance = l;
-	},
+            var source =  new ol.source.WMTS(options);
+            var layer = new ol.layer.Tile({
+                opacity: 1,
+                source:source
+            });
+            me.map.getLayers().insertAt(0, layer);
+        });
+    },
 
-	/**
-	 * Create an ESRI ArcGIS dynamic maplayer
-	 */
-	 this.createEsriLayer = function(layer){
-		var l = L.esri.dynamicMapLayer({
-			url: 'http://ags101.prvgld.nl/arcgis/rest/services/IMGEO/imgeo_wms/MapServer',
-			opacity: 0.5
-		});
-		l.addTo(this.map);
+    /**
+    * initWFSLayers
+    * Initializes the given WFS layers
+    */
+    this.initWFSLayers = function(layersConfig, layers){
+        for (var i = 0; i < layersConfig.length; i++) {
+            var config = layersConfig[i];
+            var layer = this.initWFSLayer(config);
+            if(layer){
+                layers.push(layer);
+            }
+        };
+    },
 
-		layer.instance = l;
-	 }
+    this.initWMSLayers = function (layersConfig, layers){
+        for (var i = 0; i < layersConfig.length; i++) {
+            var layerConfig = layersConfig[i];
+            var layer = this.initWMSLayer(layerConfig);
+            if(layer){
+                layers.push(layer);
+            }
+        };
+    },
+
+    this.initWMSLayer = function (layerConfig){
+        var layer = new ol.layer.Image({
+            source: new ol.source.ImageWMS({
+                url: layerConfig.url,
+                params: {
+                    layers: layerConfig.layers
+                }
+            })
+        });
+        return layer;
+    },
+
+    /**
+    * Init Tools
+    * @param tools Configuration array, where each element is a configuration of a tool.
+    * Initializes and adds the tool to the map. General layout of one configuration element:
+    * {
+        tool_id: <id_the_tool>
+      }
+    * Possible tool_id's:
+    * MousePosition
+    * ScaleLine
+    * Zoom
+    * ZoomSlider
+    */
+    this.initTools = function(tools){
+        if(tools.length > 1) {
+            // sort string ascending so ZoomSlider is always added on top of Zoom
+            tools.sort(function(a, b){
+                if (a.tool_id < b.tool_id){
+                    return -1;
+                }
+                if (a.tool_id > b.tool_id){
+                    return 1;
+                }
+                return 0;
+            });
+        }
+        for (var i = 0; i < tools.length; i++) {
+            var toolConfig = tools[i];
+            var tool = this.initTool(toolConfig);
+            this.map.addControl(tool);
+        };
+    },
+    /**
+    * initTool (toolConfig)
+    * @param toolConfig Object with the id (ie. classname) of the tool.
+    * Initialises the actual tool and returns it.
+    */
+    this.initTool = function (toolConfig){
+        var id = toolConfig["tool_id"];
+
+        var config = {};
+        if(id === "MousePosition"){
+            config.coordinateFormat = ol.coordinate.createStringXY(2);
+        }
+
+        var tool = new ol.control[id](config);
+        return tool;
+    },
+
+    this.createMap = function(layers, zoom, extent, projection,mapId){
+        this.map = new ol.Map({
+            target: mapId,
+            layers: layers,
+            view: new ol.View({
+                projection: projection,
+                center: [112623, 400081],
+                zoom: zoom,
+                minResolution: 0.105,
+                maxResolution: 3440.64,
+                extent: extent
+            }),
+            controls: []
+        });
+    }
 }
