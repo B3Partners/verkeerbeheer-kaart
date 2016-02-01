@@ -22,7 +22,10 @@
 
 function vbmap(){
 	this.map  = null,
+	this.layers = null,
+	this.baseLayers = null,
 
+	this.currentLocation = null,
 	/**
 	 * Initialize the map: create the map object, and the layers.
 	 * @params config Configuration object. See the header in config.json for the specification of the file.
@@ -44,19 +47,29 @@ function vbmap(){
 			crs:rd
 		}).setView([51.95085,5.78016],6);
 
-		this.initLayers(config.baseLayers);
-		this.initLayers(config.layers);
-		this.initControls();
+		this.baseLayers = this.initLayers(config.baseLayers);
+		this.layers = this.initLayers(config.layers);
+		this.initControls(config);
 	},
 
-	this.initControls = function(){
-		this.map.addControl( new L.Control.Gps({autoActive:true, maxZoom: 14, setView:true}) );
+	this.getLocation = function(returnFunction){
+		this.map.once('locationfound', returnFunction, this)
+		this.map.locate({
+			enableHighAccuracy: true
+		});
+	},
+
+	this.initControls = function(config){
+		this.map.addControl( new L.Control.Gps({autoActive:false, maxZoom: 14, setView:true}) );
+
+	//	L.control.layers(this.baseLayers, null).addTo(this.map);
 	},
 
 	/**
 	 * Initialize all the layers given in the layers object. This function delegates all the subsequent JSONObjects with layer information to the correct functions.
 	 */
 	this.initLayers = function(layers){
+		var layerObjects = {};
 		for (var i = 0; i < layers.length; i++) {
 			var layer = layers[i];
 			if ( layer.type === "TMS"){
@@ -68,40 +81,49 @@ function vbmap(){
 			}else{
 				throw 'Layer type ' + layer.type + ' does not exist';
 			}
+			layerObjects[layer.label] = layer.instance;
 		}
+		return layerObjects;
 	},
 
 	/**
 	 * Create a WMS layer, and add it to the map
 	 */
 	this.createWMS = function(layer){
-		L.tileLayer.wms(layer.url,{
+		var l = L.tileLayer.wms(layer.url,{
 			layers:layer.layers,
 			transparent: true,
 			format: 'image/png'
-		}).addTo(this.map);
+		});
+		l.addTo(this.map);
+		layer.instance = l;
 	},
 
 	/**
 	 * Create a TMS layer, and add it to the map.
 	 */
 	this.createTMS = function(layer){
-		L.tileLayer(layer.url, {
+		var l = L.tileLayer(layer.url, {
 		    tms: true,
 		    minZoom: 0,
 			opacity: layer.opacity ? layer.opacity : 1.0,
 		   // maxZoom: 13,
 		    continuousWorld: true
-		}).addTo(this.map);
+		});
+		l.addTo(this.map);
+		layer.instance = l;
 	},
 
 	/**
 	 * Create an ESRI ArcGIS dynamic maplayer
 	 */
 	 this.createEsriLayer = function(layer){
-		L.esri.dynamicMapLayer({
+		var l = L.esri.dynamicMapLayer({
 			url: 'http://ags101.prvgld.nl/arcgis/rest/services/IMGEO/imgeo_wms/MapServer',
 			opacity: 0.5
-		}).addTo(this.map);
+		});
+		l.addTo(this.map);
+
+		layer.instance = l;
 	 }
 }

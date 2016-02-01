@@ -2,7 +2,8 @@ var config = {
 	baseLayers:[
 		{
 			url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{y}.png",
-			type: "TMS"
+			type: "TMS",
+			label: "Openbasiskaart"
 		}/*,{
 			url: "http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png",
 			type: "TMS"
@@ -21,8 +22,9 @@ var config = {
 			layers: ['0', '1', '2', '3', '4','5','6','7','8','9','10','11','12','13','14','15','16']
 		},*/{
 			url: "http://localhost/cgi-bin/mapserv?map=/mnt/data/maps/verkeersbeheer.map",
-			layers: ["gemeentes"],
-			type: "WMS"
+			layers: ["gemeentes2"],
+			type: "WMS",
+			label: "Gemeentes"
 		}
 		/*{
 			url : "http://ags101.prvgld.nl/arcgis/rest/services/IMGEO/imgeo_wms/MapServer",
