@@ -46,7 +46,6 @@ function vbmap(){
 
         this.initTMSLayers(this.config.tms_layers, layers, extentAr, projection);
         this.initWMSLayers(this.config.wms_layers,layers);
-        this.initWFSLayers(this.config.wfs_layers,layers);
 
         this.createMap(layers,this.config.initial_zoom || 2, extentAr,projection, this.config.map_id);
         this.initWMTSLayers(this.config.wmts_layers,layers, extentAr, projection, resolutions, matrixIds);
@@ -68,7 +67,7 @@ function vbmap(){
             crossOrigin: 'anonymous',
             extent: extentAr,
             projection: projection,
-            url: layer // 'http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png'
+            url: layer
         });
         var tms = new ol.layer.Tile({
             source: openbasiskaartSource
@@ -99,20 +98,6 @@ function vbmap(){
             });
             me.map.getLayers().insertAt(0, layer);
         });
-    },
-
-    /**
-    * initWFSLayers
-    * Initializes the given WFS layers
-    */
-    this.initWFSLayers = function(layersConfig, layers){
-        for (var i = 0; i < layersConfig.length; i++) {
-            var config = layersConfig[i];
-            var layer = this.initWFSLayer(config);
-            if(layer){
-                layers.push(layer);
-            }
-        };
     },
 
     this.initWMSLayers = function (layersConfig, layers){
@@ -168,7 +153,65 @@ function vbmap(){
             var tool = this.initTool(toolConfig);
             this.map.addControl(tool);
         };
+
+        this.initGPS();
     },
+
+    this.getLocation = function(returnFunction){
+    	if(this.geolocation.getTracking()){
+    		this.geolocation.once('change:position', returnFunction);
+    	}else{
+
+	    	var me = this;
+	    	var f = function(event){
+	    		me.geolocation.un('change:position', f);
+	    		me.geolocation.setTracking(false);
+	    		returnFunction(event.target.getPosition());
+	    	};
+	    	this.geolocation.once('change:position', f);
+	    	this.geolocation.setTracking(true);
+    	}
+
+    },
+
+    this.initGPS = function(){
+		this.geolocation = new ol.Geolocation({
+			projection: this.map.getView().getProjection()
+		});
+
+	
+      	var positionFeature = new ol.Feature();
+     	positionFeature.setStyle(new ol.style.Style({
+			image: new ol.style.Circle({
+				radius: 6,
+				fill: new ol.style.Fill({
+					color: '#3399CC'
+				}),
+				stroke: new ol.style.Stroke({
+					color: '#fff',
+					width: 2
+				})
+			})
+	    }));
+
+     	var me = this;
+		this.geolocation.on('change:position', function(event) {
+			var coordinates = event.target.getPosition();
+			if(me.geolocation.getTracking() && coordinates){
+				positionFeature.setGeometry( new ol.geom.Point(coordinates));
+				me.map.getView().setCenter(coordinates);
+			}
+			
+		});
+
+		new ol.layer.Vector({
+			map: this.map,
+			source: new ol.source.Vector({
+				features: [ positionFeature]
+			})
+		});
+	},
+
     /**
     * initTool (toolConfig)
     * @param toolConfig Object with the id (ie. classname) of the tool.
