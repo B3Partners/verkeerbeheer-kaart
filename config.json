@@ -14,7 +14,10 @@
            ],
           
           "tms_layers":[
-               "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png"
+               {
+                url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png",
+                label: "Openbasiskaart"
+              }
           ],
           "initial_zoom": 9, // "zoomfactor van de kaart bij opstart",
 

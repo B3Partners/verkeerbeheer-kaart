@@ -57,7 +57,7 @@ function vbmap(){
     this.initTMSLayers = function(tmslayers,layers,extentAr, projection){
         for(var i = 0 ; i < tmslayers.length; i++){
             var layer = tmslayers[i];
-            var tms = this.initTMSLayer(layer,extentAr, projection);
+            var tms = this.initTMSLayer(layer.url,extentAr, projection);
             layers.push(tms);
         }
     },
@@ -114,6 +114,7 @@ function vbmap(){
         var layer = new ol.layer.Image({
             source: new ol.source.ImageWMS({
                 url: layerConfig.url,
+                title: layerConfig.label,
                 params: {
                     layers: layerConfig.layers
                 }
@@ -155,41 +156,37 @@ function vbmap(){
         };
 
         this.initGPS();
+
+        var layerSwitcher = new ol.control.LayerSwitcher({
+            tipLabel: 'Légende' // Optional label for button
+        });
+        this.map.addControl(layerSwitcher);
     },
 
     this.getLocation = function(returnFunction){
-    	if(this.geolocation.getTracking()){
-    		this.geolocation.once('change:position', returnFunction);
-    	}else{
-
-	    	var me = this;
-	    	var f = function(event){
-	    		me.geolocation.un('change:position', f);
-	    		me.geolocation.setTracking(false);
-	    		returnFunction(event.target.getPosition());
-	    	};
-	    	this.geolocation.once('change:position', f);
-	    	this.geolocation.setTracking(true);
-    	}
-
+        var f = function(event){
+            returnFunction(event.target.getPosition());
+        };
+        this.geolocation.once('change:position',f);
     },
 
     this.initGPS = function(){
 		this.geolocation = new ol.Geolocation({
-			projection: this.map.getView().getProjection()
+            projection: this.map.getView().getProjection(),
+            tracking: true
 		});
 
 	
       	var positionFeature = new ol.Feature();
      	positionFeature.setStyle(new ol.style.Style({
 			image: new ol.style.Circle({
-				radius: 6,
+				radius: 16,
 				fill: new ol.style.Fill({
 					color: '#3399CC'
 				}),
 				stroke: new ol.style.Stroke({
 					color: '#fff',
-					width: 2
+					width: 22
 				})
 			})
 	    }));
