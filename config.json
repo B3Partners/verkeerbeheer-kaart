@@ -1,34 +1,49 @@
-  var config = {
-          "map_id" : "map",
-          "wms_layers": [
-	          {
-				url: "http://localhost/cgi-bin/mapserv?map=/mnt/data/maps/verkeersbeheer.map",
-				layers: ["gemeentes2"],
-				type: "WMS",
-				label: "Gemeentes"
-			}
-           ],
-           "wmts_layers":[
-           //  { "name" : "BREDA", url:"https://geoservicesacc.breda.nl/arcgis/rest/services/extern_breda/basiskaart/MapServer/WMTS", matrixSet: "default028mm", layer:  "extern_breda_basiskaart"}
-              // "name": "BRT", url: "http://geodata.nationaalgeoregister.nl/tiles/service/wmts/", layer: "brtachtergrondkaartgrijstijdelijk"
-           ],
-          
-          "tms_layers":[
-               {
-                url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png",
-                label: "Openbasiskaart"
-              }
-          ],
-          "initial_zoom": 9, // "zoomfactor van de kaart bij opstart",
+var config = {
+  "map_id" : "map",
+  "initial_zoom": 9, // "zoomfactor van de kaart bij opstart",
+  "baseLayers":[
+    {
+      url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png",
+      label: "Openbasiskaart",
+      type: "TMS"
+    },
+    {
+      url: "https://geodata.nationaalgeoregister.nl/wmts/brtachtergrondkaart?request=GetCapabilities",
+      label :"BRT",
+      projection: "EPSG:28992",
+      layer: "brtachtergrondkaart",
+      type: "WMTS"
+    }
+    /*{ 
+      label : "BREDA", 
+      url:"https://geoservicesacc.breda.nl/arcgis/rest/services/extern_breda/basiskaart/MapServer/WMTS", 
+      matrixSet: "default028mm", 
+      type : "WMTS",
+      layer:  "extern_breda_basiskaart"
+    },
+    {
+      label: "BRT", 
+      url: "http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart@EPSG:28992@png/{z}/{x}/{-y}.png", 
+      layer: "brtachtergrondkaart",
+      type: "TMS"
+    }*/
+  ],
+  "thematicLayers":[
+    {
+      url: "http://localhost/cgi-bin/mapserv?map=/mnt/data/maps/verkeersbeheer.map",
+      layers: ["gemeentes2"],
+      type: "WMS",
+      label: "Gemeentes"
+    }
+  ],
+  "tools": [
+    {"tool_id": "MousePosition"},
+    {"tool_id": "ZoomSlider"},
+    {"tool_id": "Zoom"},
+    {"tool_id": "ScaleLine"}
+  ]
 
-          "tools": [
-            {"tool_id": "MousePosition"},
-            {"tool_id": "ZoomSlider"},
-            {"tool_id": "Zoom"},
-            {"tool_id": "ScaleLine"}
-          ]
-        
-      };
+};
 
 
 /**

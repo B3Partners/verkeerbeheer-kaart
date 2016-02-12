@@ -23,6 +23,9 @@
 function vbmap(){
     this.map = null,
     this.config = null,
+    this.baseLayers = null,
+    this.thematicLayers = null,
+    this.wmtsParser =  null,
 
     this.init = function(config){
         this.config = config;
@@ -30,6 +33,23 @@ function vbmap(){
     },
 
     this.initComponent = function (){
+        this.initLayers();
+        this.initTools(this.config.tools);
+    },
+
+    this.initLayers = function(){
+
+        this.wmtsParser =  new ol.format.WMTSCapabilities();
+        this.baseLayers = new ol.layer.Group({
+            title: 'Ondergronden',
+            layers: []
+        });
+
+        this.thematicLayers = new ol.layer.Group({
+            title: 'Themalagen',
+            layers: []
+        });
+
         proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
         proj4.defs('http://www.opengis.net/gml/srs/epsg.xml#28992', proj4.defs('EPSG:28992'));
       
@@ -41,80 +61,100 @@ function vbmap(){
         }
         var projection = ol.proj.get('EPSG:28992');
         projection.setExtent(extentAr);
+        this.initBaseLayers(extentAr, projection, resolutions, matrixIds);
+        this.initThematicLayers(extentAr, projection, resolutions, matrixIds);
 
-        var layers = [];
-
-        this.initTMSLayers(this.config.tms_layers, layers, extentAr, projection);
-        this.initWMSLayers(this.config.wms_layers,layers);
-
-        this.createMap(layers,this.config.initial_zoom || 2, extentAr,projection, this.config.map_id);
-        this.initWMTSLayers(this.config.wmts_layers,layers, extentAr, projection, resolutions, matrixIds);
-
-        this.initTools(this.config.tools);
-  
+        this.createMap(this.config.initial_zoom || 2, extentAr,projection, this.config.map_id);
     },
 
-    this.initTMSLayers = function(tmslayers,layers,extentAr, projection){
-        for(var i = 0 ; i < tmslayers.length; i++){
-            var layer = tmslayers[i];
-            var tms = this.initTMSLayer(layer.url,extentAr, projection);
-            layers.push(tms);
+    this.initBaseLayers = function(extentAr, projection, resolutions, matrixIds){
+        var layers = this.config.baseLayers;
+        for(var i= 0 ; i < layers.length; i++){
+            var layer = layers[i];
+            this.initLayer(layer,this.baseLayers, extentAr, projection, resolutions, matrixIds, true);
         }
     },
 
-    this.initTMSLayer = function(layer,extentAr, projection){
+    this.initThematicLayers = function(extentAr, projection, resolutions, matrixIds){
+        var layers = this.config.thematicLayers;
+        for(var i= 0 ; i < layers.length; i++){
+            var layer = layers[i];
+            this.initLayer(layer,this.thematicLayers, extentAr, projection, resolutions, matrixIds, false);
+        }
+    },
+
+    this.initLayer = function (layerConfig, group, extentAr, projection, resolutions, matrixIds, base){
+        var type = layerConfig.type;
+        var layer = null;
+        switch(type){
+            case "TMS":
+                layer = this.initTMSLayer(layerConfig, extentAr, projection, base);
+                break;
+            case "WMS":
+                layer = this.initWMSLayer(layerConfig, base);
+                break;
+            case "WMTS":
+                layer = this.initWMTSLayer(layerConfig, extentAr, projection, resolutions, matrixIds, base, group)
+                break;
+            default:
+                console.error("Type " + type + " not possible to instantiate as a layer");
+        }
+        if(layer){
+            group.getLayers().push(layer);
+        }
+    },
+
+    this.initTMSLayer = function(layer,extentAr, projection, base){
         var openbasiskaartSource = new ol.source.XYZ({
             crossOrigin: 'anonymous',
             extent: extentAr,
             projection: projection,
-            url: layer
+            url: layer.url
         });
         var tms = new ol.layer.Tile({
-            source: openbasiskaartSource
+            source: openbasiskaartSource,
+            type: base ? "base" : null,
+            title: layer.label,
         });
         return tms;
     },
    
-    this.initWMTSLayers = function(layersConfig, layers, extentAr, projection, resolutions, matrixIds){
-        for (var i = 0 ; i < layersConfig.length ;i++){
-            var config = layersConfig[0];
-            var layer = this.initWMTSLayer(config, extentAr, projection, resolutions, matrixIds);
-            layers.push(layer);
-        }
-    },
-
-    this.initWMTSLayer = function (layerConfig, extentAr, projection, resolutions, matrixIds){
+    this.initWMTSLayer = function (layerConfig, extentAr, projection, resolutions, matrixIds, base, group){
         var me = this;
         me.projection = projection;
         $.ajax(layerConfig.url).then(function(response) {
             var result = me.wmtsParser.read(response);
-            var options = ol.source.WMTS.optionsFromCapabilities(result,
-              {layer: layerConfig.layer, matrixSet: layerConfig.matrixSet, crossOrigin: null});
+            var config = {
+                layer: layerConfig.layer,
+                crossOrigin: null,
+                projection: "EPSG:28992"
+            };
+
+            if(layerConfig.matrixSet){
+                config.matrixSet = layerConfig.matrixSet;
+            }
+            if(layerConfig.projection){
+                config.projection = layerConfig.projection;
+            }
+            var options = ol.source.WMTS.optionsFromCapabilities(result, config);
 
             var source =  new ol.source.WMTS(options);
             var layer = new ol.layer.Tile({
                 opacity: 1,
+                title: layerConfig.label,
+                type: base ? "base" : null,
                 source:source
             });
-            me.map.getLayers().insertAt(0, layer);
+            group.getLayers().push(layer);
         });
     },
 
-    this.initWMSLayers = function (layersConfig, layers){
-        for (var i = 0; i < layersConfig.length; i++) {
-            var layerConfig = layersConfig[i];
-            var layer = this.initWMSLayer(layerConfig);
-            if(layer){
-                layers.push(layer);
-            }
-        };
-    },
-
-    this.initWMSLayer = function (layerConfig){
+    this.initWMSLayer = function (layerConfig, base){
         var layer = new ol.layer.Image({
+            type: base ? "base" : null,
+            title: layerConfig.label,
             source: new ol.source.ImageWMS({
                 url: layerConfig.url,
-                title: layerConfig.label,
                 params: {
                     layers: layerConfig.layers
                 }
@@ -226,10 +266,10 @@ function vbmap(){
         return tool;
     },
 
-    this.createMap = function(layers, zoom, extent, projection,mapId){
+    this.createMap = function(zoom, extent, projection,mapId){
         this.map = new ol.Map({
             target: mapId,
-            layers: layers,
+            layers: [this.baseLayers,this.thematicLayers],
             view: new ol.View({
                 projection: projection,
                 center: [112623, 400081],
