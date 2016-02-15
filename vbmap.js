@@ -198,7 +198,10 @@ function vbmap(){
             this.map.addControl(tool);
         };
 
-        this.initGPS();
+        this.gps = new b3p.GPSControl({
+            map:this.map
+        });
+        this.map.addControl(this.gps);
 
         var layerSwitcher = new ol.control.LayerSwitcher({
             tipLabel: 'Légende' // Optional label for button
@@ -207,50 +210,8 @@ function vbmap(){
     },
 
     this.getLocation = function(returnFunction){
-        var f = function(event){
-            returnFunction(event.target.getPosition());
-        };
-        this.geolocation.once('change:position',f);
+        this.gps.getLocation(returnFunction);
     },
-
-    this.initGPS = function(){
-		this.geolocation = new ol.Geolocation({
-            projection: this.map.getView().getProjection(),
-            tracking: true
-		});
-
-	
-      	var positionFeature = new ol.Feature();
-     	positionFeature.setStyle(new ol.style.Style({
-			image: new ol.style.Circle({
-				radius: 16,
-				fill: new ol.style.Fill({
-					color: '#3399CC'
-				}),
-				stroke: new ol.style.Stroke({
-					color: '#fff',
-					width: 22
-				})
-			})
-	    }));
-
-     	var me = this;
-		this.geolocation.on('change:position', function(event) {
-			var coordinates = event.target.getPosition();
-			if(me.geolocation.getTracking() && coordinates){
-				positionFeature.setGeometry( new ol.geom.Point(coordinates));
-				me.map.getView().setCenter(coordinates);
-			}
-			
-		});
-
-		new ol.layer.Vector({
-			map: this.map,
-			source: new ol.source.Vector({
-				features: [ positionFeature]
-			})
-		});
-	},
 
     /**
     * initTool (toolConfig)

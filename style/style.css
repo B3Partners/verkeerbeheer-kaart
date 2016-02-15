@@ -3,3 +3,19 @@ html, body, #map {
     margin: 0;
     height: 100%;
 }
+
+.rotate-north {
+    top: 280px;
+    left: .5em;
+  }
+
+.rotate-north button{
+    background-image: url('../images/gps-icon.png');
+    background-repeat: no-repeat;
+    background-position: 1px 1px;
+    border: none;
+}
+  
+.ol-touch .rotate-north {
+    top: 80px;
+}
