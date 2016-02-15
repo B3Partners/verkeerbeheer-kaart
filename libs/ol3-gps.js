@@ -3,29 +3,27 @@ b3p.GPSControl = function(opt_options) {
 
 	var options = opt_options || {};
 	this.map = options.map;
-	var button = document.createElement('button');
-
-	var this_ = this;
-	var handleRotateNorth = function(e) {
-		console.log("clicked");
+	var me = this;
+	var toggle = function(){
+		me.toggle();
 	};
-
-	button.addEventListener('click', handleRotateNorth, false);
-	button.addEventListener('touchstart', handleRotateNorth, false);
+	this.button = document.createElement('button');
+	this.button.addEventListener('click', toggle, false);
+	this.button.addEventListener('touchstart', toggle, false);
 
 	var element = document.createElement('div');
 	element.className = 'rotate-north ol-unselectable ol-control';
-	element.appendChild(button);
+	element.appendChild(this.button);
 
 	ol.control.Control.call(this, {
 		element: element,
 		target: options.target
 	});
 
-
+	this.tracking = false;
 	this.geolocation = new ol.Geolocation({
 		projection: this.map.getView().getProjection(),
-		tracking: true
+		tracking: this.tracking
 	});
 
 	var positionFeature = new ol.Feature();
@@ -67,3 +65,13 @@ b3p.GPSControl.prototype.getLocation = function(returnFunction){
 	};
 	this.geolocation.once('change:position',f);
 }
+
+b3p.GPSControl.prototype.toggle = function() {
+	if(this.tracking){
+		this.button.style["background-position"] = "1px 1px";
+	}else{
+		this.button.style["background-position"] = "1px -51px";
+	}
+	this.tracking = !this.tracking;
+	this.geolocation.setTracking(this.tracking);
+};
