@@ -5,7 +5,8 @@ var config = {
     {
       url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png",
       label: "Openbasiskaart",
-      type: "TMS"
+      type: "TMS",
+      visible: true
     },
     {
       url: "https://geodata.nationaalgeoregister.nl/wmts/brtachtergrondkaart?request=GetCapabilities",

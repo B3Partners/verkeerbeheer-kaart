@@ -105,16 +105,17 @@ function vbmap(){
     },
 
     this.initTMSLayer = function(layer,extentAr, projection, base){
-        var openbasiskaartSource = new ol.source.XYZ({
+        var tmsSource = new ol.source.XYZ({
             crossOrigin: 'anonymous',
             extent: extentAr,
             projection: projection,
             url: layer.url
         });
         var tms = new ol.layer.Tile({
-            source: openbasiskaartSource,
+            source: tmsSource,
             type: base ? "base" : null,
             title: layer.label,
+            visible: layer.visible ? layer.visible : false
         });
         return tms;
     },
@@ -143,7 +144,8 @@ function vbmap(){
                 opacity: 1,
                 title: layerConfig.label,
                 type: base ? "base" : null,
-                source:source
+                source:source,
+                visible: layerConfig.visible !== undefined ? layerConfig.visible : false
             });
             group.getLayers().push(layer);
         });
@@ -153,6 +155,7 @@ function vbmap(){
         var layer = new ol.layer.Image({
             type: base ? "base" : null,
             title: layerConfig.label,
+            visible: layerConfig.visible ? layerConfig.visible : false,
             source: new ol.source.ImageWMS({
                 url: layerConfig.url,
                 params: {
