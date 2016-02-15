@@ -204,9 +204,7 @@ function vbmap(){
         });
         this.map.addControl(this.gps);
 
-        var layerSwitcher = new ol.control.LayerSwitcher({
-            tipLabel: 'Légende' // Optional label for button
-        });
+        var layerSwitcher = new ol.control.LayerSwitcher();
         this.map.addControl(layerSwitcher);
     },
 
