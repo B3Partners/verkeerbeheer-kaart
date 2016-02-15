@@ -29,16 +29,27 @@ function vbmap(){
 
     this.init = function(config){
         this.config = config;
-        this.initComponent();
-    },
-
-    this.initComponent = function (){
         this.initLayers();
         this.initTools(this.config.tools);
     },
 
-    this.initLayers = function(){
 
+
+    /************************** API function *********************/
+
+    /*
+     * getLocation
+     * Function to retrieve the location of the device.
+     * @param returnFunction Function to be called when the location is present. Must take one argument, which will be an array of the coordinates [xPosition, yPosition]
+     */
+    this.getLocation = function(returnFunction){
+        this.gps.getLocation(returnFunction);
+    },
+
+    /************************** Map creation functions *********************/
+
+    /************** Creation of layers *************/
+    this.initLayers = function(){
         this.wmtsParser =  new ol.format.WMTSCapabilities();
         this.baseLayers = new ol.layer.Group({
             title: 'Ondergronden',
@@ -109,6 +120,7 @@ function vbmap(){
             crossOrigin: 'anonymous',
             extent: extentAr,
             projection: projection,
+            tilePixelRatio: layer.tilePixelRatio ? layer.tilePixelRatio : 1,
             url: layer.url
         });
         var tms = new ol.layer.Tile({
@@ -152,11 +164,11 @@ function vbmap(){
     },
 
     this.initWMSLayer = function (layerConfig, base){
-        var layer = new ol.layer.Image({
+        var layer = new ol.layer.Tile({
             type: base ? "base" : null,
             title: layerConfig.label,
             visible: layerConfig.visible ? layerConfig.visible : false,
-            source: new ol.source.ImageWMS({
+            source: new ol.source.TileWMS({
                 url: layerConfig.url,
                 params: {
                     layers: layerConfig.layers
@@ -166,6 +178,8 @@ function vbmap(){
         return layer;
     },
 
+
+    /************** Creation of Tools *************/
     /**
     * Init Tools
     * @param tools Configuration array, where each element is a configuration of a tool.
@@ -200,16 +214,12 @@ function vbmap(){
 
         this.gps = new b3p.GPSControl({
             map:this.map,
-            tracking :true
+            tracking :false
         });
         this.map.addControl(this.gps);
 
         var layerSwitcher = new ol.control.LayerSwitcher();
         this.map.addControl(layerSwitcher);
-    },
-
-    this.getLocation = function(returnFunction){
-        this.gps.getLocation(returnFunction);
     },
 
     /**
@@ -229,10 +239,13 @@ function vbmap(){
         return tool;
     },
 
+    /************** Creation of the map *************/
     this.createMap = function(zoom, extent, projection,mapId){
+        var interactions = ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false}); 
         this.map = new ol.Map({
             target: mapId,
             layers: [this.baseLayers,this.thematicLayers],
+            interactions: interactions,
             view: new ol.View({
                 projection: projection,
                 center: [112623, 400081],
