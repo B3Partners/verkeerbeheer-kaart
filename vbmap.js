@@ -199,7 +199,8 @@ function vbmap(){
         };
 
         this.gps = new b3p.GPSControl({
-            map:this.map
+            map:this.map,
+            tracking :true
         });
         this.map.addControl(this.gps);
 

@@ -20,7 +20,10 @@ b3p.GPSControl = function(opt_options) {
 		target: options.target
 	});
 
-	this.tracking = false;
+	this.tracking = options.tracking ? options.tracking : false;
+	if(this.tracking){
+		this.button.style["background-position"] = "1px -51px";
+	}
 	this.geolocation = new ol.Geolocation({
 		projection: this.map.getView().getProjection(),
 		tracking: this.tracking
@@ -49,7 +52,7 @@ b3p.GPSControl = function(opt_options) {
 		}
 	});
 
-	new ol.layer.Vector({
+	this.vectorLayer = new ol.layer.Vector({
 		map: this.map,
 		source: new ol.source.Vector({
 			features: [ positionFeature]
@@ -69,6 +72,7 @@ b3p.GPSControl.prototype.getLocation = function(returnFunction){
 b3p.GPSControl.prototype.toggle = function() {
 	if(this.tracking){
 		this.button.style["background-position"] = "1px 1px";
+		this.vectorLayer.getSource().clear();
 	}else{
 		this.button.style["background-position"] = "1px -51px";
 	}
