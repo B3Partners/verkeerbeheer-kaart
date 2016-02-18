@@ -1,0 +1,169 @@
+MAP
+  CONFIG "MS_ERRORFILE" "/mnt/data/maps/verkeersbeheer_errors.txt"
+  debug 5
+    NAME "gisdata"
+    SIZE 3000 3000
+    UNITS meters
+
+    EXTENT 170000 460000 270000 540000
+
+    FONTSET './fonts/fonts.txt'
+    SYMBOLSET './symbols/symbols.txt'
+
+PROJECTION
+  "init=epsg:28992"
+END
+
+    # Background color for the map canvas -- change as desired
+    IMAGECOLOR 255 255 255
+    IMAGEQUALITY 95
+    IMAGETYPE agg
+
+    OUTPUTFORMAT
+        NAME agg
+        DRIVER AGG/PNG
+        MIMETYPE 'image/png'
+        IMAGEMODE RGBA
+        EXTENSION 'png'
+        FORMATOPTION 'GAMMA=0.75'
+    END
+
+    LEGEND
+        IMAGECOLOR 255 255 255
+        STATUS ON
+        KEYSIZE 18 12
+        LABEL
+            TYPE BITMAP
+            SIZE MEDIUM
+            COLOR 0 0 89
+        END
+    END
+
+    WEB
+        IMAGEPATH '/tmp/'
+        IMAGEURL '/tmp/'
+
+        METADATA
+            'wms_title'               'verkeersbeheer'
+            'wms_onlineresource'      'http://localhost/cgi-bin/mapserv?map=/mnt/data/maps/verkeersbeheer.map'
+            'wms_srs'                 'EPSG:28992'
+
+            'wfs_title'               'verkeersbeheer WFS'
+            'wfs_onlineresource'      'localhost/cgi-bin/mapserv?map=/mnt/data/maps//verkeersbeheer.map'
+            'wfs_srs'                 'EPSG:28992'
+            'wfs_enable_request'		"*"
+
+            'ows_title'               'verkeersbeheer'
+            'ows_onlineresource'      'localhost/cgi-bin/mapserv?map=/mnt/data/maps/verkeersbeheer.map'
+            'ows_srs'                 'EPSG:28992'
+
+            'ows_contactorganization' ''
+            'ows_enable_request'      '*'
+        END
+
+        TEMPLATE fooOnlyForWMSGetFeatureInfo
+    END
+
+    LAYER
+        NAME "gemeentes"
+        TYPE POLYGON        
+       # OPACITY 100
+        STATUS ON
+        ####
+        CONNECTIONTYPE OGR
+        #CONNECTION "MSSQL:server=.\SQLEXPRESS;uid=xx;pwd=xxx;database=geo;trusted_connection=yes;tables=province(ogr_geometry)"
+        CONNECTION "MSSQL:server=kantoor.b3p.nl;database=verkeerbeheer;uid=sa;pwd=xxxx;tables=gemeentes(the_geom)"
+        ####
+        PROJECTION
+            "init=epsg:28992"
+        END
+       CLASS
+            NAME "standaard" 
+            GROUP "group1"
+            style
+                opacity 40
+                outlinecolor 0 0 0
+                color 255 0 0
+                width 1
+            END
+            LABEL
+                #minfeaturesize auto    
+                type truetype
+                antialias true
+                color 0 0 0
+                outlinecolor 255 255 255      
+                outlinewidth 2
+                font arial
+                size 10
+             END    
+        END
+
+        PROCESSING 'CLOSE_CONNECTION=DEFER'
+    END # layer
+
+    LAYER
+        NAME "gemeentes2"
+
+        TYPE POLYGON        		
+        OPACITY 100
+
+        VALIDATION
+            "gm_code" "[A-Z0-9]"
+            "gm_code_active" '^true|false$'
+            "gm_naam" "[A-Z]"
+            "gm_naam_active" '^true|false$'
+        END
+
+		STATUS ON
+		DUMP true
+        TEMPLATE fooOnlyForWMSGetFeatureInfo
+		CONNECTIONTYPE postgis
+        CONNECTION "dbname='test' host=localhost port=5432 user='xxx' password='xxxx' sslmode=disable"
+        DATA 'geom from (select gm_code,gm_naam,geom,gid FROM "gem_2014_new")as foo USING UNIQUE gid USING srid=28992'
+        
+		METADATA
+	            'wms_title'           'Gemeentes 2014'
+	            'wfs_title'           'Gemeentes 2014'
+	            'ows_title'           'Gemeentes 2014'
+	            'ows_include_items'   'all'
+	            'gml_include_items'   'all'
+	            "gml_featureid"			"ID"
+	            "wfs_srs"			"EPSG:28992"
+        END
+
+		LABELITEM gm_naam
+ 		CLASSGROUP "group1"
+        CLASSITEM gm_code
+        
+        
+        #FILTER (('%gm_code_active%'!='true' or gm_code "Gouda,Vlist") OR ('%gm_naam_active%'!='true' or gm_naam='%gm_naam%')   )
+       # FILTER (gm_naam)
+       # FILTER (gm_code IN 'GM0513,GM0623')
+    	CLASS
+      		NAME "standaard" 
+            
+            EXPRESSION (('%gm_code_active%'!='true' or '[gm_code]' in '%gm_code%') AND ('%gm_naam_active%'!='true' or '[gm_naam]' = '%gm_naam%'))  #werkt
+            # EXPRESSION ('%gm_code_active%'!='true' or '[gm_code]' in '%gm_code%') #werkt
+            # werkt EXPRESSION ('[gm_code]' in '%gm_code%')
+             # werkt: EXPRESSION (('[gm_code]' in 'GM0513,GM0623') OR ('[gm_naam]' = 'Ouderkerk'))
+            # EXPRESSION ('[gm_code]' = 'GM0513')
+   			GROUP "group1"
+            style
+                opacity 40
+                outlinecolor 0 0 0
+                color 248 147 86
+                width 1
+     		END
+     		LABEL
+                #minfeaturesize auto    
+                type truetype
+                antialias true
+                color 0 0 0
+                outlinecolor 255 255 255      
+                outlinewidth 2
+                font arial
+                size 10
+		     END	
+    	END
+	END	
+END
