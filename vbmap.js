@@ -35,7 +35,7 @@ function vbmap(){
 
 
 
-    /************************** API function *********************/
+    /************************** API functions *********************/
 
     /*
      * getLocation
@@ -45,6 +45,68 @@ function vbmap(){
     this.getLocation = function(returnFunction){
         this.gps.getLocation(returnFunction);
     },
+    /*
+     * setFilter
+     * Set a filter to the meldingen layer.
+     * @param Takes a javascript Object as a parameter, which denotes the filter. The object is as follows:
+            var filter = {
+                id: "",
+                schade_nr: "",
+                weg: [],
+                hmp:{
+                    begin: "",
+                    eind: ""
+                },
+                coordinator:[],
+                datum:{
+                    begin: "",
+                    eind: ""
+                },
+                type: [],
+                categorie: [],
+                status: []
+            };
+     */
+     this.setFilter = function(filter){
+        var layers = this.thematicLayers.getLayers().getArray();
+        for (var i = 0 ; i < layers.length ;i++){
+            var layer = layers[0];
+            this.resetFilter(layer);
+            for (var key in filter){
+                var f = {};
+                f[key] = filter[key].constructor === Array ? filter[key].join(",") : filter[key];
+                f[key + "_active"] = true;
+                layer.getSource().updateParams(f);
+            }
+        }
+     },
+
+     this.resetAllFilters = function(){
+        var layers = this.thematicLayers.getLayers().getArray();
+        for (var i = 0 ; i < layers.length ;i++){
+            this.resetFilter(layers[i]);
+        }
+
+     },
+
+     this.resetFilter = function(layer){
+        var params = layer.getSource().getParams();
+        var newParams = {};
+        for(var key in params){
+            if(key !== "layers"){
+                newParams[key]= null;
+            }
+        }
+        layer.getSource().updateParams(newParams);
+     },
+
+     this.dummyFilter = function(){
+        var filter = {
+            gm_code: ['GM0513'],
+            gm_naam: "Gouda"
+        };
+        this.setFilter(filter);
+     },
 
     /************************** Map creation functions *********************/
 
@@ -164,11 +226,22 @@ function vbmap(){
     },
 
     this.initWMSLayer = function (layerConfig, base){
-        var layer = new ol.layer.Tile({
+       /* var layer = new ol.layer.Tile({
             type: base ? "base" : null,
             title: layerConfig.label,
             visible: layerConfig.visible ? layerConfig.visible : false,
             source: new ol.source.TileWMS({
+                url: layerConfig.url,
+                params: {
+                    layers: layerConfig.layers
+                }
+            })
+        });*/
+        var layer = new ol.layer.Image({
+            type: base ? "base" : null,
+            title: layerConfig.label,
+            visible: layerConfig.visible ? layerConfig.visible : false,
+            source: new ol.source.ImageWMS({
                 url: layerConfig.url,
                 params: {
                     layers: layerConfig.layers
@@ -214,7 +287,7 @@ function vbmap(){
 
         this.gps = new b3p.GPSControl({
             map:this.map,
-            tracking :false
+            tracking :true
         });
         this.map.addControl(this.gps);
 
@@ -248,7 +321,8 @@ function vbmap(){
             interactions: interactions,
             view: new ol.View({
                 projection: projection,
-                center: [112623, 400081],
+                center: [108528, 446933],
+ //               center: [112623, 400081],
                 zoom: zoom,
                 minResolution: 0.105,
                 maxResolution: 3440.64,

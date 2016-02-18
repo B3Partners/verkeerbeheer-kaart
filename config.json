@@ -41,7 +41,8 @@ var config = {
       url: "http://localhost/cgi-bin/mapserv?map=/mnt/data/maps/verkeersbeheer.map",
       layers: ["gemeentes2"],
       type: "WMS",
-      label: "Gemeentes"
+      label: "Gemeentes",
+      visible:true
     }
   ],
   "tools": [
