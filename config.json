@@ -6,13 +6,6 @@ var config = {
       url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png",
       label: "Openbasiskaart",
       type: "TMS",
-      visible: false
-    },
-    {
-      url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm-hq@rd-hq/{z}/{x}/{-y}.png",
-      label: "Openbasiskaart",
-      type: "TMS",
-      tilePixelRatio: 2,
       visible: true
     },
     {
@@ -38,7 +31,7 @@ var config = {
   ],
   "thematicLayers":[
     {
-      url: "http://localhost/cgi-bin/mapserv?map=/mnt/data/maps/verkeersbeheer.map",
+      url: "http://localhost/cgi-bin/mapserv?map=/var/www/html/verkeerbeheer-kaart/mapfile/verkeersbeheer.map",
       layers: ["gemeentes2"],
       type: "WMS",
       label: "Gemeentes",

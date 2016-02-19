@@ -64,42 +64,42 @@ END
         TEMPLATE fooOnlyForWMSGetFeatureInfo
     END
 
-    LAYER
-        NAME "gemeentes"
-        TYPE POLYGON        
-       # OPACITY 100
-        STATUS ON
-        ####
-        CONNECTIONTYPE OGR
-        #CONNECTION "MSSQL:server=.\SQLEXPRESS;uid=xx;pwd=xxx;database=geo;trusted_connection=yes;tables=province(ogr_geometry)"
-        CONNECTION "MSSQL:server=kantoor.b3p.nl;database=verkeerbeheer;uid=sa;pwd=xxxx;tables=gemeentes(the_geom)"
-        ####
-        PROJECTION
-            "init=epsg:28992"
-        END
-       CLASS
-            NAME "standaard" 
-            GROUP "group1"
-            style
-                opacity 40
-                outlinecolor 0 0 0
-                color 255 0 0
-                width 1
-            END
-            LABEL
-                #minfeaturesize auto    
-                type truetype
-                antialias true
-                color 0 0 0
-                outlinecolor 255 255 255      
-                outlinewidth 2
-                font arial
-                size 10
-             END    
-        END
-
-        PROCESSING 'CLOSE_CONNECTION=DEFER'
-    END # layer
+#    LAYER
+#        NAME "gemeentes"
+#        TYPE POLYGON        
+#       # OPACITY 100
+#        STATUS ON
+#        ####
+#        CONNECTIONTYPE OGR
+#        #CONNECTION "MSSQL:server=.\SQLEXPRESS;uid=xx;pwd=xxx;database=geo;trusted_connection=yes;tables=province(ogr_geometry)"
+#        CONNECTION "MSSQL:server=kantoor.b3p.nl;database=verkeerbeheer;uid=sa;pwd=xxxx;tables=gemeentes(the_geom)"
+#        ####
+#        PROJECTION
+#            "init=epsg:28992"
+#        END
+#       CLASS
+#            NAME "standaard" 
+#            GROUP "group1"
+#            style
+#                opacity 40
+#                outlinecolor 0 0 0
+#                color 255 0 0
+#                width 1
+#            END
+#            LABEL
+#                #minfeaturesize auto    
+#                type truetype
+#                antialias true
+#                color 0 0 0
+#                outlinecolor 255 255 255      
+#                outlinewidth 2
+#                font arial
+#                size 10
+#             END    
+#        END
+#
+#        PROCESSING 'CLOSE_CONNECTION=DEFER'
+#    END # layer
 
     LAYER
         NAME "gemeentes2"
@@ -116,10 +116,10 @@ END
 
 		STATUS ON
 		DUMP true
-        TEMPLATE fooOnlyForWMSGetFeatureInfo
+        TEMPLATE geojson
 		CONNECTIONTYPE postgis
-        CONNECTION "dbname='test' host=localhost port=5432 user='xxx' password='xxxx' sslmode=disable"
-        DATA 'geom from (select gm_code,gm_naam,geom,gid FROM "gem_2014_new")as foo USING UNIQUE gid USING srid=28992'
+        CONNECTION "dbname='xxx' host=localhost port=5432 user='xxx' password='xxx' sslmode=disable"
+        DATA 'geom from (select gm_code,gm_naam,geom,gid FROM "gem_2014")as foo USING UNIQUE gid USING srid=28992'
         
 		METADATA
 	            'wms_title'           'Gemeentes 2014'
@@ -129,6 +129,7 @@ END
 	            'gml_include_items'   'all'
 	            "gml_featureid"			"ID"
 	            "wfs_srs"			"EPSG:28992"
+                "wfs_getfeature_formatlist" "gml,geojson"
         END
 
 		LABELITEM gm_naam

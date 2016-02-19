@@ -244,7 +244,8 @@ function vbmap(){
             source: new ol.source.ImageWMS({
                 url: layerConfig.url,
                 params: {
-                    layers: layerConfig.layers
+                    layers: layerConfig.layers,
+                    query_layers: layerConfig.layers
                 }
             })
         });
@@ -293,6 +294,23 @@ function vbmap(){
 
         var layerSwitcher = new ol.control.LayerSwitcher();
         this.map.addControl(layerSwitcher);
+
+        this.initWMSGetFeatureInfo();
+    },
+
+    this.initWMSGetFeatureInfo = function(){
+        var layer = this.thematicLayers.getLayers().getArray()[0];
+        this.map.on('singleclick', function(evt) {
+            document.getElementById('info').innerHTML = '';
+            var viewResolution = (this.getView().getResolution());
+            var url = layer.getSource().getGetFeatureInfoUrl(
+                evt.coordinate, viewResolution, 'EPSG:28992',
+                {'INFO_FORMAT': 'text/plain'});
+            if (url) {
+              document.getElementById('info').innerHTML =
+                  '<iframe seamless src="' + url + '"></iframe>';
+            }
+        });
     },
 
     /**
