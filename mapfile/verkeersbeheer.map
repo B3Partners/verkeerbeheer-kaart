@@ -28,6 +28,16 @@ END
         FORMATOPTION 'GAMMA=0.75'
     END
 
+
+    OUTPUTFORMAT
+      NAME "geojson"
+      DRIVER "OGR/GEOJSON"
+      MIMETYPE "application/json; subtype=geojson"
+      FORMATOPTION "STORAGE=stream"
+      FORMATOPTION "FORM=SIMPLE"
+    END
+
+
     LEGEND
         IMAGECOLOR 255 255 255
         STATUS ON
@@ -129,7 +139,7 @@ END
 	            'gml_include_items'   'all'
 	            "gml_featureid"			"ID"
 	            "wfs_srs"			"EPSG:28992"
-                "wfs_getfeature_formatlist" "gml,geojson"
+                "wfs_getfeature_formatlist" "geojson"
         END
 
 		LABELITEM gm_naam
