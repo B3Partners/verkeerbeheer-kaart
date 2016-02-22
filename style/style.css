@@ -63,3 +63,16 @@ html, body, #map {
 .ol-popup-closer:after {
     content: "✖";
 }
+
+.result-block{
+    display:block;
+}
+
+.result-title {
+    display:block;
+    font-weight: bold;
+
+}
+.result-content {
+    
+}

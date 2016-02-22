@@ -1,10 +1,11 @@
-b3p.GetFeature = function(opt_options) {
-	this.map = opt_options.map;
-	/**
+b3p.GetFeature = function(options) {
+	this.map = options.map;
+	this.maxResults = options.maxResults ? options.maxResults : 10;
+	/**;
 	* Elements that make up the popup.
 	*/
 	var container = document.getElementById('popup');
-	var content = document.getElementById('popup-content');
+	this.content = document.getElementById('popup-content');
 	var closer = document.getElementById('popup-closer');
 
 
@@ -12,11 +13,11 @@ b3p.GetFeature = function(opt_options) {
        * Create an overlay to anchor the popup to the map.
        */
       var overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
-        element: container,
-        autoPan: true,
-        autoPanAnimation: {
-          duration: 250
-        }
+		    element: container,
+		    autoPan: true,
+		    autoPanAnimation: {
+		      duration: 250
+		    }
       }));
 
       this.map.addOverlay(overlay);
@@ -34,13 +35,13 @@ b3p.GetFeature = function(opt_options) {
 
 
 
-        var layer = opt_options.layers;
+        var layer = options.layers;
+        var me = this;
         this.map.on('singleclick', function(evt) {
 
             var coordinate = evt.coordinate;
             overlay.setPosition(coordinate);
             var extent = [101688.72,443365.44,115367.28,450502.08];
-            var me = this;
             var url = layer.getSource().getUrl() + '&service=WFS&' +
             'version=1.1.0&request=GetFeature&typename=' + layer.getSource().getParams().layers.join(",") +
             '&outputFormat=geojson&srsName=EPSG:28992&bbox=' + extent.join(',') + '';
@@ -52,8 +53,7 @@ b3p.GetFeature = function(opt_options) {
                     var data = JSON.parse(response);
                     var a = 0;
                     overlay.setPosition(coordinate);
-
-                    content.innerHTML = '<p>You clicked here:</p>';
+                    me.handleResults(data.features);
                 },
                 error: function(xhr, status, error) {
                     throw "Error collecting features: " + status + " Error given:" + error;
@@ -73,3 +73,18 @@ b3p.GetFeature = function(opt_options) {
         });
 };
 ol.inherits(b3p.GetFeature, ol.control.Control);
+
+b3p.GetFeature.prototype.handleResults = function(results) {
+	for(var i = 0 ; i < this.maxResults ; i++){
+		var result = results[i];
+		this.handleResult(result);
+	}
+};
+
+b3p.GetFeature.prototype.handleResult = function(result) {
+	this.content.innerHTML += '<span class="result-block">';
+	this.content.innerHTML += '<span class="result-title">Feature</span>';
+	this.content.innerHTML += '<span class="result-content">Naam ' + result.properties["gm_naam"] +'</span>';
+	this.content.innerHTML += '</span>';
+};
+
