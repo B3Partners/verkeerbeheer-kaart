@@ -2,6 +2,7 @@ b3p.GetFeature = function(options) {
 	this.map = options.map;
 	this.maxResults = options.maxResults ? options.maxResults : 10;
 	this.layer = options.layers;
+	this.tolerance = options.tolerance ? options.tolerance : 4;
 	/**;
 	* Elements that make up the popup.
 	*/
@@ -53,9 +54,10 @@ b3p.GetFeature.prototype.onMapClicked = function(evt) {
 		dataType: 'text',
 		success: function (response) {
 			var data = JSON.parse(response);
-			var a = 0;
-			me.overlay.setPosition(coordinate);
 			me.handleResults(data.features);
+			if(data.features.length > 0){
+				me.overlay.setPosition(coordinate);
+			}
 		},
 		error: function(xhr, status, error) {
 			throw "Error collecting features: " + status + " Error given:" + error;
@@ -64,11 +66,9 @@ b3p.GetFeature.prototype.onMapClicked = function(evt) {
 };
 
 b3p.GetFeature.prototype.getBBOX = function(point){
-	var bbox = [101688.72,443365.44,115367.28,450502.08];
 	var viewResolution = (this.map.getView().getResolution());
-	var tolerance = 4;
-	var distance = tolerance * viewResolution;
-	var extent ={
+	var distance = this.tolerance * viewResolution;
+	var extent = {
 		minx: point[0] - distance,
 		miny: point[1] - distance,
 		maxx: point[0] + distance,

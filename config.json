@@ -1,6 +1,7 @@
 var config = {
   "map_id" : "map",
   "initial_zoom": 9, // "zoomfactor van de kaart bij opstart",
+  tolerance: 5,
   "baseLayers":[
     {
       url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png",

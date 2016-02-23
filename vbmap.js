@@ -298,7 +298,8 @@ function vbmap(){
 
         this.getFeature = new b3p.GetFeature({
             map:this.map,
-            layers: this.thematicLayers.getLayers().getArray()[0]
+            layers: this.thematicLayers.getLayers().getArray()[0],
+            tolerance: this.config.tolerance
         });
         this.map.addControl(this.getFeature);
     },
