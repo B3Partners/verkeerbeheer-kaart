@@ -3,13 +3,25 @@ b3p.GetFeature = function(options) {
 	this.maxResults = options.maxResults ? options.maxResults : 10;
 	this.layer = options.layers;
 	this.tolerance = options.tolerance ? options.tolerance : 4;
+	
 	/**;
 	* Elements that make up the popup.
 	*/
-	var container = document.getElementById('popup');
-	this.content = document.getElementById('popup-content');
-	var closer = document.getElementById('popup-closer');
+	var container = document.createElement('div');
+	container.id = 'popup';
+	container.className = 'ol-popup';
 
+  	var closer = document.createElement('a');
+    closer.href =  '#';
+    closer.id = "popup-closer";
+    closer.className = "ol-popup-closer";
+   
+	this.content = document.createElement('div');
+	this.content.id = 'popup-content';
+	container.appendChild(this.content);
+	container.appendChild(closer);
+
+	document.getElementsByTagName('body')[0].appendChild(container);
 
 	/**
 	* Create an overlay to anchor the popup to the map.
@@ -38,7 +50,7 @@ b3p.GetFeature = function(options) {
 	var me = this;
 	this.map.on('singleclick',this.onMapClicked, this);
 };
-ol.inherits(b3p.GetFeature, ol.control.Control);
+
 
 b3p.GetFeature.prototype.onMapClicked = function(evt) {
 	var coordinate = evt.coordinate;

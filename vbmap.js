@@ -301,7 +301,6 @@ function vbmap(){
             layers: this.thematicLayers.getLayers().getArray()[0],
             tolerance: this.config.tolerance
         });
-        this.map.addControl(this.getFeature);
     },
 
     /**
