@@ -1,6 +1,7 @@
 b3p.GetFeature = function(options) {
 	this.map = options.map;
 	this.maxResults = options.maxResults ? options.maxResults : 10;
+	this.layer = options.layers;
 	/**;
 	* Elements that make up the popup.
 	*/
@@ -9,73 +10,78 @@ b3p.GetFeature = function(options) {
 	var closer = document.getElementById('popup-closer');
 
 
-      /**
-       * Create an overlay to anchor the popup to the map.
-       */
-      var overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
-		    element: container,
-		    autoPan: true,
-		    autoPanAnimation: {
-		      duration: 250
-		    }
-      }));
+	/**
+	* Create an overlay to anchor the popup to the map.
+	*/
+	this.overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
+		element: container,
+		autoPan: true,
+		autoPanAnimation: {
+			duration: 250
+		}
+	}));
 
-      this.map.addOverlay(overlay);
-
-
-      /**
-       * Add a click handler to hide the popup.
-       * @return {boolean} Don't follow the href.
-       */
-      closer.onclick = function() {
-        overlay.setPosition(undefined);
-        closer.blur();
-        return false;
-      };
+	this.map.addOverlay(this.overlay);
 
 
-
-        var layer = options.layers;
-        var me = this;
-        this.map.on('singleclick', function(evt) {
-
-            var coordinate = evt.coordinate;
-            overlay.setPosition(coordinate);
-            var extent = [101688.72,443365.44,115367.28,450502.08];
-            var url = layer.getSource().getUrl() + '&service=WFS&' +
-            'version=1.1.0&request=GetFeature&typename=' + layer.getSource().getParams().layers.join(",") +
-            '&outputFormat=geojson&srsName=EPSG:28992&bbox=' + extent.join(',') + '';
-            $.ajax({
-                url: url,
-                crossDomain:true,
-                dataType: 'text',
-                success: function (response) {
-                    var data = JSON.parse(response);
-                    var a = 0;
-                    overlay.setPosition(coordinate);
-                    me.handleResults(data.features);
-                },
-                error: function(xhr, status, error) {
-                    throw "Error collecting features: " + status + " Error given:" + error;
-                }
-            });
-
-
-            document.getElementById('info').innerHTML = '';
-            var viewResolution = (this.getView().getResolution());
-            var url = layer.getSource().getGetFeatureInfoUrl(
-                evt.coordinate, viewResolution, 'EPSG:28992',
-                {'INFO_FORMAT': 'text/plain'});
-            if (url) {
-              document.getElementById('info').innerHTML =
-                  '<iframe seamless src="' + url + '"></iframe>';
-            }
-        });
+	/**
+	* Add a click handler to hide the popup.
+	* @return {boolean} Don't follow the href.
+	*/
+	closer.onclick = function() {
+		me.overlay.setPosition(undefined);
+		closer.blur();
+		return false;
+	};
+	
+	var me = this;
+	this.map.on('singleclick',this.onMapClicked, this);
 };
 ol.inherits(b3p.GetFeature, ol.control.Control);
 
+b3p.GetFeature.prototype.onMapClicked = function(evt) {
+	var coordinate = evt.coordinate;
+	this.overlay.setPosition(coordinate);
+	var extent = this.getBBOX(coordinate);
+	var url = this.layer.getSource().getUrl() + '&service=WFS&' +
+	'version=1.1.0&request=GetFeature&typename=' + this.layer.getSource().getParams().layers.join(",") +
+	'&outputFormat=geojson&srsName=EPSG:28992&bbox=' + extent + '';
+	var me = this;
+	$.ajax({
+		url: url,
+		crossDomain:true,
+		dataType: 'text',
+		success: function (response) {
+			var data = JSON.parse(response);
+			var a = 0;
+			me.overlay.setPosition(coordinate);
+			me.handleResults(data.features);
+		},
+		error: function(xhr, status, error) {
+			throw "Error collecting features: " + status + " Error given:" + error;
+		}
+	});
+};
+
+b3p.GetFeature.prototype.getBBOX = function(point){
+	var bbox = [101688.72,443365.44,115367.28,450502.08];
+	var viewResolution = (this.map.getView().getResolution());
+	var tolerance = 4;
+	var distance = tolerance * viewResolution;
+	var extent ={
+		minx: point[0] - distance,
+		miny: point[1] - distance,
+		maxx: point[0] + distance,
+		maxy: point[1] + distance
+	};
+	var bbox = extent.minx +"," + extent.miny +"," + extent.maxx +"," + extent.maxy;
+	return bbox;
+};
+
 b3p.GetFeature.prototype.handleResults = function(results) {
-	for(var i = 0 ; i < this.maxResults ; i++){
+	var numResults = Math.min(this.maxResults,results.length);
+	this.content.innerHTML = '';
+	for(var i = 0 ; i < numResults ; i++){
 		var result = results[i];
 		this.handleResult(result);
 	}
