@@ -1,4 +1,9 @@
 b3p.GetFeature = function(options) {
+	this.editLink = options.editLink;
+	this.viewLink = options.viewLink;
+	this.createLink = options.createLink;
+	this.mode = options.mode;
+
 	this.map = options.map;
 	this.maxResults = options.maxResults ? options.maxResults : 10;
 	this.layer = options.layers;
@@ -99,7 +104,23 @@ b3p.GetFeature.prototype.handleResults = function(results) {
 b3p.GetFeature.prototype.handleResult = function(result) {
 	this.content.innerHTML += '<span class="result-block">';
 	this.content.innerHTML += '<span class="result-title">Feature</span>';
-	this.content.innerHTML += '<span class="result-content">Naam ' + result.properties["gm_naam"] +'</span>';
+	this.content.innerHTML += '<span class="result-content">Naam ' + result.properties["gm_naam"];
+	switch(this.mode){
+		case "edit":
+			this.content.innerHTML += '<br/><a href="' + this.replaceId(result.properties["gm_code"],this.editLink) + '">Bewerk melding</a>';
+			break
+		case "new":
+			this.content.innerHTML += '<br/><a href="' + this.replaceId(result.properties["gm_code"],this.createLink) + '">Maak melding</a>';
+			break
+		case "view":
+		default:
+			this.content.innerHTML += '<br/><a href="' + this.replaceId(result.properties["gm_code"],this.viewLink) + '">Bekijk melding</a>';
+			break
+	}
 	this.content.innerHTML += '</span>';
 };
 
+b3p.GetFeature.prototype.replaceId = function(id, link){
+	var newLink = link.replace("[meldingid]",id);
+	return newLink;
+};

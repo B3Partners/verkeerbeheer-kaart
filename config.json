@@ -1,11 +1,12 @@
 var config = {
-  mode: "edit", // [ view | edit | new ]
+  mode: "view", // [ view | edit | new ]
   map_id : "map",
   initial_zoom: 9, // "zoomfactor van de kaart bij opstart",
   getFeature :{
       tolerance: 5,
-      createLink : "",
-      editLink : "" // http://<server>.nl/<path>/[meldingid]
+      createLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=0&type=1", // http://<server>.nl/<path>
+      viewLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]", // http://<server>.nl/<path>/[meldingid]
+      editLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]" // http://<server>.nl/<path>/[meldingid]
    },
   baseLayers:[
     {

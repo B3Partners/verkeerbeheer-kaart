@@ -301,6 +301,7 @@ function vbmap(){
         var getfeatureconfig = this.config.getFeature;
         getfeatureconfig.map = this.map;
         getfeatureconfig.layers = this.thematicLayers.getLayers().getArray()[0];
+        getfeatureconfig.mode = this.mode;
         this.getFeature = new b3p.GetFeature(getfeatureconfig);
     },
 
@@ -331,7 +332,6 @@ function vbmap(){
             view: new ol.View({
                 projection: projection,
                 center: [108528, 446933],
- //               center: [112623, 400081],
                 zoom: zoom,
                 minResolution: 0.105,
                 maxResolution: 3440.64,
