@@ -32,15 +32,16 @@ b3p.GPSControl = function(opt_options) {
 	var positionFeature = new ol.Feature();
 		positionFeature.setStyle(new ol.style.Style({
 		image: new ol.style.Circle({
-			radius: 16,
-			fill: new ol.style.Fill({
-				color: '#3399CC'
-			}),
+			radius: 6,
 			stroke: new ol.style.Stroke({
-				color: '#fff',
-				width: 22
-			})
-		})
+				color: '#f00',
+				width: 2
+			}),
+			fill: new ol.style.Fill({
+              color: '#3399CC'
+            })
+		}),
+	
 	}));
 
 	var me = this;

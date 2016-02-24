@@ -36,7 +36,6 @@ b3p.GetFeature = function(options) {
 
 	this.map.addOverlay(this.overlay);
 
-
 	/**
 	* Add a click handler to hide the popup.
 	* @return {boolean} Don't follow the href.
@@ -51,14 +50,12 @@ b3p.GetFeature = function(options) {
 	this.map.on('singleclick',this.onMapClicked, this);
 };
 
-
 b3p.GetFeature.prototype.onMapClicked = function(evt) {
 	var coordinate = evt.coordinate;
 	this.overlay.setPosition(coordinate);
 	var extent = this.getBBOX(coordinate);
-	var url = this.layer.getSource().getUrl() + '&service=WFS&' +
-	'version=1.1.0&request=GetFeature&typename=' + this.layer.getSource().getParams().layers.join(",") +
-	'&outputFormat=geojson&srsName=EPSG:28992&bbox=' + extent + '';
+	var url = this.layer.getSource().getUrl() + '&service=WFS&' + 'version=1.1.0&request=GetFeature&typename=' + this.layer.getSource().getParams().layers.join(",") +
+		'&outputFormat=geojson&srsName=EPSG:28992&bbox=' + extent + '';
 	var me = this;
 	$.ajax({
 		url: url,
