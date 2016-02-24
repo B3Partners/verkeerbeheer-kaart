@@ -27,9 +27,11 @@ function vbmap(){
     this.thematicLayers = null,
     this.wmtsParser =  null,
     this.getFeature = null,
+    this.mode = null,
 
     this.init = function(config){
         this.config = config;
+        this.mode = config.mode;
         this.initLayers();
         this.initTools(this.config.tools);
     },
@@ -296,11 +298,10 @@ function vbmap(){
         var layerSwitcher = new ol.control.LayerSwitcher();
         this.map.addControl(layerSwitcher);
 
-        this.getFeature = new b3p.GetFeature({
-            map:this.map,
-            layers: this.thematicLayers.getLayers().getArray()[0],
-            tolerance: this.config.tolerance
-        });
+        var getfeatureconfig = this.config.getFeature;
+        getfeatureconfig.map = this.map;
+        getfeatureconfig.layers = this.thematicLayers.getLayers().getArray()[0];
+        this.getFeature = new b3p.GetFeature(getfeatureconfig);
     },
 
     /**
