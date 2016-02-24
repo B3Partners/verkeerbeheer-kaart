@@ -1,8 +1,13 @@
 var config = {
-  "map_id" : "map",
-  "initial_zoom": 9, // "zoomfactor van de kaart bij opstart",
-  tolerance: 5,
-  "baseLayers":[
+  mode: "edit", // [ view | edit | new ]
+  map_id : "map",
+  initial_zoom: 9, // "zoomfactor van de kaart bij opstart",
+  getFeature :{
+      tolerance: 5,
+      createLink : "",
+      editLink : "" // http://<server>.nl/<path>/[meldingid]
+   },
+  baseLayers:[
     {
       url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png",
       label: "Openbasiskaart",
@@ -16,21 +21,8 @@ var config = {
       layer: "brtachtergrondkaart",
       type: "WMTS"
     }
-    /*{ 
-      label : "BREDA", 
-      url:"https://geoservicesacc.breda.nl/arcgis/rest/services/extern_breda/basiskaart/MapServer/WMTS", 
-      matrixSet: "default028mm", 
-      type : "WMTS",
-      layer:  "extern_breda_basiskaart"
-    },
-    {
-      label: "BRT", 
-      url: "http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart@EPSG:28992@png/{z}/{x}/{-y}.png", 
-      layer: "brtachtergrondkaart",
-      type: "TMS"
-    }*/
   ],
-  "thematicLayers":[
+  thematicLayers:[
     {
       url: "http://localhost/cgi-bin/mapserv?map=/var/www/html/verkeerbeheer-kaart/mapfile/verkeersbeheer.map",
       layers: ["gemeentes2"],
@@ -39,11 +31,11 @@ var config = {
       visible:true
     }
   ],
-  "tools": [
-    {"tool_id": "MousePosition"},
-    {"tool_id": "ZoomSlider"},
-    {"tool_id": "Zoom"},
-    {"tool_id": "ScaleLine"}
+  tools: [
+    {tool_id: "MousePosition"},
+    {tool_id: "ZoomSlider"},
+    {tool_id: "Zoom"},
+    {tool_id: "ScaleLine"}
   ]
 
 };
