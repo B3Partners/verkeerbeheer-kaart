@@ -34,6 +34,7 @@ function vbmap(){
         this.mode = config.mode;
         this.initLayers();
         this.initTools(this.config.tools);
+        this.initEditting();
     },
 
 
@@ -298,11 +299,13 @@ function vbmap(){
         var layerSwitcher = new ol.control.LayerSwitcher();
         this.map.addControl(layerSwitcher);
 
-        var getfeatureconfig = this.config.getFeature;
-        getfeatureconfig.map = this.map;
-        getfeatureconfig.layers = this.thematicLayers.getLayers().getArray()[0];
-        getfeatureconfig.mode = this.mode;
-        this.getFeature = new b3p.GetFeature(getfeatureconfig);
+        if(this.mode === "view"){
+            var getfeatureconfig = this.config.getFeature;
+            getfeatureconfig.map = this.map;
+            getfeatureconfig.layers = this.thematicLayers.getLayers().getArray()[0];
+            getfeatureconfig.mode = this.mode;
+            this.getFeature = new b3p.GetFeature(getfeatureconfig);
+        }
     },
 
     /**
@@ -322,9 +325,53 @@ function vbmap(){
         return tool;
     },
 
+    this.initEditting = function(){
+        var features = new ol.Collection();
+        var featureOverlay = new ol.layer.Vector({
+            source: new ol.source.Vector({features: features}),
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({
+                    color: 'rgba(255, 255, 255, 0.2)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#ffcc33',
+                    width: 2
+                }),
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                        color: '#ffcc33'
+                    })
+                })
+            })
+        });
+        featureOverlay.setMap(this.map);
+
+        switch(this.mode){
+            case "view":
+                break;
+            case "new":
+                draw = new ol.interaction.Draw({
+                    features: features,
+                    type: "Point"
+                });
+                this.map.addInteraction(draw);
+                draw.on("drawstart", function(){features.clear();}, this);
+                // no break, "new also requires a modify interactions"
+            case "edit":  
+                var modify = new ol.interaction.Modify({
+                    features: features
+                });
+                this.map.addInteraction(modify);
+                break;
+        };
+
+    },
+
     /************** Creation of the map *************/
     this.createMap = function(zoom, extent, projection,mapId){
-        var interactions = ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false}); 
+        var interactions = ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false});
+
         this.map = new ol.Map({
             target: mapId,
             layers: [this.baseLayers,this.thematicLayers],
