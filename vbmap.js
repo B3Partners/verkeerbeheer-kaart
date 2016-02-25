@@ -363,7 +363,7 @@ function vbmap(){
                     style:  style
                 });
                 this.map.addInteraction(draw);
-                draw.on("drawstart", function(){this.features.clear();}, this);
+                draw.on("drawend", function(){this.features.clear();}, this);
                 // no break, "new also requires a modify interactions"
             case "edit":  
                 var modify = new ol.interaction.Modify({
