@@ -41,6 +41,14 @@ function vbmap(){
 
     /************************** API functions *********************/
 
+    this.getFeatureLocation = function(){
+        var coords = [];
+        if(this.features.getLength() > 0){
+            coords = this.features.getArray()[0].getGeometry().getCoordinates()
+        }
+        return coords;
+    },
+
     /*
      * getLocation
      * Function to retrieve the location of the device.
@@ -326,25 +334,18 @@ function vbmap(){
     },
 
     this.initEditting = function(){
-        var features = new ol.Collection();
-        var featureOverlay = new ol.layer.Vector({
-            source: new ol.source.Vector({features: features}),
-                style: new ol.style.Style({
-                    fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 255, 0.2)'
-                }),
-                stroke: new ol.style.Stroke({
-                    color: '#ffcc33',
-                    width: 2
-                }),
-                image: new ol.style.Circle({
-                    radius: 7,
-                    fill: new ol.style.Fill({
-                        color: '#ffcc33'
-                    })
-                })
+        var style = new ol.style.Style({
+            image: new ol.style.Icon({
+                scale: 0.3,
+                src: 'images/Tb4.003.svg'
             })
         });
+
+        this.features = new ol.Collection();
+        var featureOverlay = new ol.layer.Vector({
+            source: new ol.source.Vector({features: this.features}),
+                style: style
+            });
         featureOverlay.setMap(this.map);
 
         switch(this.mode){
@@ -352,20 +353,20 @@ function vbmap(){
                 break;
             case "new":
                 draw = new ol.interaction.Draw({
-                    features: features,
-                    type: "Point"
+                    features: this.features,
+                    type: "Point",
+                    style:  style
                 });
                 this.map.addInteraction(draw);
-                draw.on("drawstart", function(){features.clear();}, this);
+                draw.on("drawstart", function(){this.features.clear();}, this);
                 // no break, "new also requires a modify interactions"
             case "edit":  
                 var modify = new ol.interaction.Modify({
-                    features: features
+                    features: this.features
                 });
                 this.map.addInteraction(modify);
                 break;
         };
-
     },
 
     /************** Creation of the map *************/

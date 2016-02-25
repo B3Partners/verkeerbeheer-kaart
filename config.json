@@ -1,5 +1,6 @@
 var config = {
-  mode: "edit", // [ view | edit | new ]
+  mode: "new", // [ view | edit | new ]
+
   map_id : "map",
   initial_zoom: 9, // "zoomfactor van de kaart bij opstart",
   getFeature :{
