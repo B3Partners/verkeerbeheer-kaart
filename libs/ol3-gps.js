@@ -29,8 +29,8 @@ b3p.GPSControl = function(opt_options) {
 		tracking: this.tracking
 	});
 
-	var positionFeature = new ol.Feature();
-		positionFeature.setStyle(new ol.style.Style({
+	this.positionFeature = new ol.Feature();
+	this.positionFeature.setStyle(new ol.style.Style({
 		image: new ol.style.Circle({
 			radius: 6,
 			stroke: new ol.style.Stroke({
@@ -48,7 +48,7 @@ b3p.GPSControl = function(opt_options) {
 	this.geolocation.on('change:position', function(event) {
 		var coordinates = event.target.getPosition();
 		if(me.geolocation.getTracking() && coordinates){
-			positionFeature.setGeometry( new ol.geom.Point(coordinates));
+			me.positionFeature.setGeometry( new ol.geom.Point(coordinates));
 			me.map.getView().setCenter(coordinates);
 		}
 	});
@@ -56,7 +56,7 @@ b3p.GPSControl = function(opt_options) {
 	this.vectorLayer = new ol.layer.Vector({
 		map: this.map,
 		source: new ol.source.Vector({
-			features: [ positionFeature]
+			features: [this.positionFeature]
 		})
 	});
 
@@ -75,6 +75,9 @@ b3p.GPSControl.prototype.toggle = function() {
 		this.button.style["background-position"] = "1px 1px";
 		this.vectorLayer.getSource().clear();
 	}else{
+		if(this.vectorLayer.getSource().getFeatures().length === 0){
+			this.vectorLayer.getSource().addFeature(this.positionFeature);
+		}
 		this.button.style["background-position"] = "1px -51px";
 	}
 	this.tracking = !this.tracking;
