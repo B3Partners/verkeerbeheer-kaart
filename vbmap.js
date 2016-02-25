@@ -41,6 +41,11 @@ function vbmap(){
 
     /************************** API functions *********************/
 
+    /**
+     * getFeatureLocation
+     * Function to retrieve the location of the drawn feature.
+     * @returns An array of coordinates [xcoord, ycoord]. Empty array when no feature is drawn.
+     */
     this.getFeatureLocation = function(){
         var coords = [];
         if(this.features.getLength() > 0){
