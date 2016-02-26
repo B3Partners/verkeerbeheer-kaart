@@ -4,8 +4,10 @@ b3p.GPSControl = function(opt_options) {
 	var options = opt_options || {};
 	this.map = options.map;
 	var me = this;
-	var toggle = function(){
+	var toggle = function(e){
+        e = e || window.event;
 		me.toggle();
+        e.preventDefault();
 	};
 	var button = document.createElement('button');
 	button.addEventListener('click', toggle, false);
