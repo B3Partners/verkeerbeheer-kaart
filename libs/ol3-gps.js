@@ -52,6 +52,7 @@ b3p.GPSControl = function(opt_options) {
 		if(me.geolocation.getTracking() && coordinates){
 			me.positionFeature.setGeometry( new ol.geom.Point(coordinates));
 			me.map.getView().setCenter(coordinates);
+			me.map.getView().setZoom(12);
 		}
 	});
 
