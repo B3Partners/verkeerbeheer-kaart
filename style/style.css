@@ -5,19 +5,26 @@ html, body, #map {
     width: 90%;
 }
 
-.rotate-north {
+.ol-gps {
     top: 280px;
     left: .5em;
-  }
+}
 
-.rotate-north button{
-    background-image: url('../images/gps-icon.png');
+.gps-active button{
+    background-image: url('../images/gps-fixed.svg');
+}
+
+.gps-inactive button{
+    background-image: url('../images/gps-not-fixed.svg');
+}
+
+.ol-gps button{
+    background-size: contain;
     background-repeat: no-repeat;
-    background-position: 1px 1px;
     border: none;
 }
   
-.ol-touch .rotate-north {
+.ol-touch .ol-gps {
     top: 280px;
 }
 

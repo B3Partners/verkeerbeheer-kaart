@@ -7,22 +7,22 @@ b3p.GPSControl = function(opt_options) {
 	var toggle = function(){
 		me.toggle();
 	};
-	this.button = document.createElement('button');
-	this.button.addEventListener('click', toggle, false);
-	this.button.addEventListener('touchstart', toggle, false);
+	var button = document.createElement('button');
+	button.addEventListener('click', toggle, false);
+	button.addEventListener('touchstart', toggle, false);
 
-	var element = document.createElement('div');
-	element.className = 'rotate-north ol-unselectable ol-control';
-	element.appendChild(this.button);
+	this.element = document.createElement('div');
+	this.element.className = 'ol-gps gps-inactive ol-unselectable ol-control';
+	this.element.appendChild(button);
 
 	ol.control.Control.call(this, {
-		element: element,
+		element: this.element,
 		target: options.target
 	});
 
 	this.tracking = options.tracking ? options.tracking : false;
 	if(this.tracking){
-		this.button.style["background-position"] = "1px -51px";
+		this.toggleStyle();
 	}
 	this.geolocation = new ol.Geolocation({
 		projection: this.map.getView().getProjection(),
@@ -72,14 +72,21 @@ b3p.GPSControl.prototype.getLocation = function(returnFunction){
 
 b3p.GPSControl.prototype.toggle = function() {
 	if(this.tracking){
-		this.button.style["background-position"] = "1px 1px";
 		this.vectorLayer.getSource().clear();
 	}else{
 		if(this.vectorLayer.getSource().getFeatures().length === 0){
 			this.vectorLayer.getSource().addFeature(this.positionFeature);
 		}
-		this.button.style["background-position"] = "1px -51px";
 	}
 	this.tracking = !this.tracking;
+	this.toggleStyle();
 	this.geolocation.setTracking(this.tracking);
+};
+
+b3p.GPSControl.prototype.toggleStyle = function() {
+	if(!this.tracking){
+		this.element.className = this.element.className.replace(/\bgps-active\b/,'gps-inactive');
+	}else{
+		this.element.className = this.element.className.replace(/\bgps-inactive\b/,'gps-active');
+	}
 };

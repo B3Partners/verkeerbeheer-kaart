@@ -312,7 +312,7 @@ function vbmap(){
         var layerSwitcher = new ol.control.LayerSwitcher();
         this.map.addControl(layerSwitcher);
 
-        if(this.mode === "view"){
+        if(this.mode === "view" || this.mode === "edit"){
             var getfeatureconfig = this.config.getFeature;
             getfeatureconfig.map = this.map;
             getfeatureconfig.layers = this.thematicLayers.getLayers().getArray()[0];
