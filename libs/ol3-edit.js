@@ -5,17 +5,28 @@ b3p.EditControl = function(opt_options) {
 	this.mode = options.mode;
 
     this.currentItem = null;
+    this.buttons = [];
+    this.active = false;
+    this.interaction = null;
+
+    var me = this;
+    var styleFunction = function(a,b,c){
+        return me.getStyle(a,b,me);
+    };
+    this.features = new ol.Collection();
+    this.featureOverlay = new ol.layer.Vector({
+        source: new ol.source.Vector({features: this.features}),
+            style: styleFunction
+        });
+    this.featureOverlay.setMap(this.map);
+
 
     this.createButton(1,options);
-    this.createButton(2,options)
-	this.init();
-    
+    this.createButton(2,options);    
 };
- 
 
 ol.inherits(b3p.EditControl, ol.control.Control);
 
-    
 b3p.EditControl.prototype.createButton = function(typeMelding,options){
     var me = this;
     var toggle = function(e){
@@ -43,58 +54,96 @@ b3p.EditControl.prototype.createButton = function(typeMelding,options){
     ol.control.Control.call(this, {
        element : element 
     });
+
+    this.buttons.push(button);
 };
 
-b3p.EditControl.prototype.init = function(){
-    var style = new ol.style.Style({
+b3p.EditControl.prototype.getStyle = function(a,b,me){
+    var src = 'images/';
+    switch(me.type){
+        case 1:
+            src += 'radio_rood.png';
+            break;
+        case 2:
+            src += 'radio_blauw.png';
+            break;
+        default:
+            break;
+    }
+    return new ol.style.Style({
         image: new ol.style.Icon({
             scale: 1,
-            src: 'images/radio_rood.png'
-        })
-    });
+            src: src
+        })});
+};
 
-    this.features = new ol.Collection();
-    var featureOverlay = new ol.layer.Vector({
-        source: new ol.source.Vector({features: this.features}),
-            style: style
-        });
-    featureOverlay.setMap(this.map);
+b3p.EditControl.prototype.addInteraction = function(){
+
+    var me = this;
+    var styleFunction = function(a,b,c){
+        return me.getStyle(a,b,me);
+    };
 
     switch(this.mode){
         case "view":
             break;
         case "new":
-            draw = new ol.interaction.Draw({
+            this.draw = new ol.interaction.Draw({
                 features: this.features,
                 type: "Point",
-                style:  style
+                style:  styleFunction
             });
-            this.map.addInteraction(draw);
-            draw.on("drawend", function(){this.features.clear();}, this);
+            this.map.addInteraction(this.draw);
+            this.draw.on("drawend", function(){this.features.clear();}, this);
             // no break, "new also requires a modify interactions"
         case "edit":  
-            var modify = new ol.interaction.Modify({
+            this.modify = new ol.interaction.Modify({
                 features: this.features
             });
-            this.map.addInteraction(modify);
+            this.map.addInteraction(this.modify);
             break;
     };
 };
 
-b3p.EditControl.prototype.toggle = function(button, type) {
-	this.toggleStyle(button);
+b3p.EditControl.prototype.removeInteraction = function(){
+    this.map.removeInteraction(this.modify);
+    this.map.removeInteraction(this.draw);
 };
 
-b3p.EditControl.prototype.toggleStyle = function(button) {
+b3p.EditControl.prototype.toggle = function(button, type) {
+    if(this.features){
+        this.features.clear();
+    }
     var element = button.parentElement;
     var parentClasses = element.className;
+    
+    this.active = parentClasses.indexOf("-inactive") !== -1;
+    if(this.active){
+        this.type = type;
+        this.addInteraction();
+        for( var b in this.buttons){
+            var but = this.buttons[b];
+            if(b.id !== button.id){
+                this.toggleStyle(but, false);
+            }
+        }
+    }else{
+        this.type = null;
+        this.removeInteraction();
+    }
+    this.toggleStyle(button, this.active);
+};
+
+b3p.EditControl.prototype.toggleStyle = function(button,active) {
+    var element = button.parentElement;
+    var parentClasses = element.className;
+    
     var editElement = "edit" + button.typeMelding;
     var activeClass = editElement + "-active";
     var inactiveClass = editElement + "-inactive";
-    var tracking = parentClasses.indexOf(activeClass)  === -1;
-	if(!tracking){
-        element.className = element.className.split(activeClass).join(inactiveClass);
-	}else{
+	if(active){
         element.className = element.className.split(inactiveClass).join(activeClass);
+	}else{
+        element.className = element.className.split(activeClass).join(inactiveClass);
 	}
 };
