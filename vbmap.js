@@ -34,7 +34,6 @@ function vbmap(){
         this.mode = config.mode;
         this.initLayers();
         this.initTools(this.config.tools);
-        this.initEditting();
     },
 
 
@@ -305,7 +304,7 @@ function vbmap(){
 
         this.gps = new b3p.GPSControl({
             map:this.map,
-            tracking :true
+            tracking :false
         });
         this.map.addControl(this.gps);
 
@@ -319,6 +318,13 @@ function vbmap(){
             getfeatureconfig.mode = this.mode;
             this.getFeature = new b3p.GetFeature(getfeatureconfig);
         }
+
+
+        this.edit = new b3p.EditControl({
+            map:this.map,
+            mode:this.mode
+        });
+        this.map.addControl(this.edit);
     },
 
     /**
@@ -336,42 +342,6 @@ function vbmap(){
 
         var tool = new ol.control[id](config);
         return tool;
-    },
-
-    this.initEditting = function(){
-        var style = new ol.style.Style({
-            image: new ol.style.Icon({
-                scale: 0.3,
-                src: 'images/Tb4.003.svg'
-            })
-        });
-
-        this.features = new ol.Collection();
-        var featureOverlay = new ol.layer.Vector({
-            source: new ol.source.Vector({features: this.features}),
-                style: style
-            });
-        featureOverlay.setMap(this.map);
-
-        switch(this.mode){
-            case "view":
-                break;
-            case "new":
-                draw = new ol.interaction.Draw({
-                    features: this.features,
-                    type: "Point",
-                    style:  style
-                });
-                this.map.addInteraction(draw);
-                draw.on("drawend", function(){this.features.clear();}, this);
-                // no break, "new also requires a modify interactions"
-            case "edit":  
-                var modify = new ol.interaction.Modify({
-                    features: this.features
-                });
-                this.map.addInteraction(modify);
-                break;
-        };
     },
 
     /************** Creation of the map *************/

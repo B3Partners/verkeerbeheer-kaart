@@ -5,6 +5,7 @@ html, body, #map {
     width: 90%;
 }
 
+/*GPS*/
 .ol-gps {
     top: 280px;
     left: .5em;
@@ -28,7 +29,8 @@ html, body, #map {
     top: 280px;
 }
 
- .ol-popup {
+/* Featureinfo popup */
+.ol-popup {
     position: absolute;
     background-color: white;
     -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
@@ -80,6 +82,43 @@ html, body, #map {
     font-weight: bold;
 
 }
-.result-content {
-    
+
+/* Edit component */
+
+.edit{
+    top: 10px;
+    /*left: .5em;*/
+}
+
+.edit button{
+    background-size: contain;
+    background-repeat: no-repeat;
+    border: none;
+}
+
+.edit1 {
+    left: 100px;
+}
+.edit2 {
+    left: 150px;
+    background-color: rgba(0,60,136,.7);
+}
+
+.edit1 button{
+    background-image: url('../images/radio_rood.png');
+}
+.edit2 button{
+    background-image: url('../images/radio_blauw.png');
+}
+
+.edit1 button{
+    background-image: url('../images/radio_rood.png');
+}
+
+.edit1-active button{
+    background-image: url('../images/radio_rood_selected.png');
+}
+
+.edit2-active button{
+    background-image: url('../images/radio_blauw_selected.png');
 }
