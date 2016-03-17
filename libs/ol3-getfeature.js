@@ -25,7 +25,7 @@ b3p.GetFeature = function(options) {
 
 b3p.GetFeature.prototype.onMapClicked = function(evt) {
 	var coordinate = evt.coordinate;
-	this.popup.setPosition(coordinate);
+	//this.popup.setPosition(coordinate);
 	var extent = this.getBBOX(coordinate);
 	var url = this.layer.getSource().getUrl() + '&service=WFS&' + 'version=1.1.0&request=GetFeature&typename=' + this.layer.getSource().getParams().layers.join(",") +
 		'&outputFormat=geojson&srsName=EPSG:28992&bbox=' + extent + '';
@@ -35,10 +35,12 @@ b3p.GetFeature.prototype.onMapClicked = function(evt) {
 		crossDomain:true,
 		dataType: 'text',
 		success: function (response) {
-			var data = JSON.parse(response);
-			me.handleResults(data.features);
-			if(data.features.length > 0){
-				me.popup.setPosition(coordinate);
+			if(response && response !== ""){
+				var data = JSON.parse(response);
+				me.handleResults(data.features, coordinate[0], coordinate[1]);
+				if(data.features.length > 0){
+					me.popup.setPosition(coordinate);
+				}
 			}
 		},
 		error: function(xhr, status, error) {
@@ -60,39 +62,22 @@ b3p.GetFeature.prototype.getBBOX = function(point){
 	return bbox;
 };
 
-b3p.GetFeature.prototype.handleResults = function(results) {
+b3p.GetFeature.prototype.handleResults = function(results, x, y) {
 	var numResults = Math.min(this.maxResults,results.length);
 	var content = '';
 	for(var i = 0 ; i < numResults ; i++){
 		var result = results[i];
-		content += this.handleResult(result);
+		content += this.handleResult(result, x, y);
 	}
 	this.popup.setInnerHTML(content);
 
 };
 
-b3p.GetFeature.prototype.handleResult = function(result) {
+b3p.GetFeature.prototype.handleResult = function(result, x, y) {
 	var content = '<span class="result-block">';
 	content += '<span class="result-title">Feature</span>';
 	content += '<span class="result-content">Naam ' + result.properties[this.labelProperty];
-	switch(this.mode){
-		case "edit":
-			content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.editLink) + '">Bewerk melding</a>';
-			this.edit.setFeature(result);
-			break
-		case "new":
-			content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.createLink) + '">Maak melding</a>';
-			break
-		case "view":
-		default:
-			content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.viewLink) + '">Bekijk melding</a>';
-			break
-	}
+	content += this.edit.getLink(result, x, y);
 	content += '</span>';
 	return content;
-};
-
-b3p.GetFeature.prototype.replaceId = function(id, link){
-	var newLink = link.replace("[meldingid]",id);
-	return newLink;
 };

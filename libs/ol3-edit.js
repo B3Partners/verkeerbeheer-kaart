@@ -17,7 +17,7 @@
 b3p.EditControl = function(options) {
     initOptions(this,options);
 
-
+    this.geojsonParser = new ol.format.GeoJSON();
     this.currentItem = null;
     this.buttons = [];
     this.interaction = null;
@@ -80,14 +80,28 @@ b3p.EditControl.prototype.createButton = function(typeMelding,options){
     this.buttons.push(button);
 };
 
-b3p.EditControl.prototype.setFeature = function(feature){
-    console.log("setFeature",feature);
+b3p.EditControl.prototype.setFeature = function(geojson){
+    if(!this.modify){
+        this.addInteraction();
+    }
+    this.features.clear();
+    console.log("setFeature",geojson);
+    var feature = this.geojsonParser.readFeature(geojson);
+    this.type = 2;//geojson.properties[this.typeProperty];
+    this.featureOverlay.getSource().addFeature(feature);
+};
+
+b3p.EditControl.prototype.featureModified = function(evt){
+    var feature = evt.features.getArray()[0];
+    var coords = feature.getGeometry().getCoordinates();
+    this.popup.setPosition(coords);
 };
 
 b3p.EditControl.prototype.featureDrawn = function(evt){
     this.features.clear();
-    var coords = evt.feature.getGeometry().getCoordinates();
-    var content = this.getPopupText();
+    var feature = evt.feature ? evt.feature : evt.features.getArray()[0];
+    var coords = feature.getGeometry().getCoordinates();
+    var content = this.getPopupText(coords[0], coords[1]);
     this.popup.setInnerHTML (content);
     this.popup.setPosition(coords);
 };
@@ -105,6 +119,7 @@ b3p.EditControl.prototype.getStyle = function(a,b,me){
             src += 'radio_groen.png';
             break;
         default:
+            src += 'radio_rood.png';
             break;
     }
     return new ol.style.Style({
@@ -137,17 +152,19 @@ b3p.EditControl.prototype.addInteraction = function(){
             this.modify = new ol.interaction.Modify({
                 features: this.features
             });
+            this.modify.on("modifyend",this.featureModified,this);
             this.map.addInteraction(this.modify);
             break;
     };
 };
 
 
-b3p.EditControl.prototype.getPopupText = function(){
-
+b3p.EditControl.prototype.getPopupText = function(x, y){
+    var newFeat = {properties : {}};
     var content = '<span class="result-block">';
     content += '<span class="result-title">Nieuwe ' + this.labels[1] + ' maken </span>';
-    content += '<br/><a href="' +this.createLink + '">Maak</a>';
+    newFeat.properties [this.idProperty] = 0;
+    content += this.getLink(newFeat, x, y);
     return content;
 };
 
@@ -180,6 +197,25 @@ b3p.EditControl.prototype.toggle = function(button, type) {
     this.toggleStyle(button, active);
 };
 
+b3p.EditControl.prototype.getLink = function(result, x, y){
+    var coordinateString = "zLocX=" + x + "&zLocY=" + y;
+    var content = "";
+    switch(this.mode){
+        case "edit":
+            content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.editLink) + '&' + coordinateString + '">Bewerk melding</a>';
+            this.setFeature(result);
+            break
+        case "new":
+            content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.createLink) + '&' + coordinateString + '">Maak</a>';
+            break
+        case "view":
+        default:
+            content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.viewLink) + '&' + coordinateString + '">Bekijk melding</a>';
+            break
+    }
+    return content;
+};
+
 b3p.EditControl.prototype.toggleStyle = function(button,active) {
     var element = button.parentElement;
     var parentClasses = element.className;
@@ -192,4 +228,10 @@ b3p.EditControl.prototype.toggleStyle = function(button,active) {
 	}else{
         element.className = element.className.split(activeClass).join(inactiveClass);
 	}
+};
+
+
+b3p.EditControl.prototype.replaceId = function(id, link){
+    var newLink = link.replace("[meldingid]",id);
+    return newLink;
 };
