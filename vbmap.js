@@ -309,10 +309,20 @@ function vbmap(){
         });
         this.map.addControl(this.gps);
 
-        var layerSwitcher = new ol.control.LayerSwitcher();
+        var layerSwitcher = new ol.control.LayerSwitcher({});
         this.map.addControl(layerSwitcher);
 
         this.popup = new b3p.Popup({map:this.map});
+
+
+
+        var editConfig = this.config.getFeature;
+        editConfig.map = this.map;
+        editConfig.popup = this.popup;
+        editConfig.mode = this.mode;
+
+        this.edit = new b3p.EditControl(editConfig);
+       // this.map.addControl(this.edit);
 
         if(this.mode === "view" || this.mode === "edit"){
             var getfeatureconfig = this.config.getFeature;
@@ -320,16 +330,10 @@ function vbmap(){
             getfeatureconfig.layer = this.thematicLayers.getLayers().getArray()[0];
             getfeatureconfig.mode = this.mode;
             getfeatureconfig.popup = this.popup;
+            getfeatureconfig.edit = this.edit;
             this.getFeature = new b3p.GetFeature(getfeatureconfig);
         }
-
-        var editConfig = this.config.getFeature;
-        editConfig.map = this.map;
-        editConfig.popup = this.popup;
-        editConfig.mode = this.mode;
         
-        this.edit = new b3p.EditControl(editConfig);
-        this.map.addControl(this.edit);
     },
 
     /**

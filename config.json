@@ -1,5 +1,5 @@
 var config = {
-  mode: "new", // [ view | edit | new ]
+  mode: "edit", // [ view | edit | new ]
 
   map_id : "map",
   initial_zoom: 9, // "zoomfactor van de kaart bij opstart",
@@ -7,7 +7,10 @@ var config = {
       tolerance: 5,
       createLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=0&type=1", // http://<server>.nl/<path>
       viewLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]", // http://<server>.nl/<path>/[meldingid]
-      editLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]" // http://<server>.nl/<path>/[meldingid]
+      editLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]", // http://<server>.nl/<path>/[meldingid]
+      idProperty : "bu_code",
+      labelProperty : "bu_naam",
+      typeProperty: "type"
    },
   baseLayers:[
     {
@@ -33,9 +36,9 @@ var config = {
   thematicLayers:[
     {
       url: "http://localhost/cgi-bin/mapserv?map=/var/www/html/verkeerbeheer-kaart/mapfile/verkeersbeheer.map",
-      layers: ["gemeentes2"],
+      layers: ["buurt"],
       type: "WMS",
-      label: "Gemeentes",
+      label: "Buurten",
       visible:true
     }
   ],

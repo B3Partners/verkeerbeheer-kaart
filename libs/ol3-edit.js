@@ -39,9 +39,11 @@ b3p.EditControl = function(options) {
         3 : "melding"
     }
 
-    this.createButton(1,options);
-    this.createButton(2,options);
-    this.createButton(3,options);
+    if(this.mode === "new"){
+        this.createButton(1,options);
+        this.createButton(2,options);
+        this.createButton(3,options);
+    }
 };
 
 ol.inherits(b3p.EditControl, ol.control.Control);
@@ -76,6 +78,18 @@ b3p.EditControl.prototype.createButton = function(typeMelding,options){
     });
 
     this.buttons.push(button);
+};
+
+b3p.EditControl.prototype.setFeature = function(feature){
+    console.log("setFeature",feature);
+};
+
+b3p.EditControl.prototype.featureDrawn = function(evt){
+    this.features.clear();
+    var coords = evt.feature.getGeometry().getCoordinates();
+    var content = this.getPopupText();
+    this.popup.setInnerHTML (content);
+    this.popup.setPosition(coords);
 };
 
 b3p.EditControl.prototype.getStyle = function(a,b,me){
@@ -128,13 +142,6 @@ b3p.EditControl.prototype.addInteraction = function(){
     };
 };
 
-b3p.EditControl.prototype.featureDrawn = function(evt){
-    this.features.clear();
-    var coords = evt.feature.getGeometry().getCoordinates();
-    var content = this.getPopupText();
-    this.popup.setInnerHTML (content);
-    this.popup.setPosition(coords);
-};
 
 b3p.EditControl.prototype.getPopupText = function(){
 

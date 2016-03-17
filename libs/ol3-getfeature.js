@@ -74,17 +74,18 @@ b3p.GetFeature.prototype.handleResults = function(results) {
 b3p.GetFeature.prototype.handleResult = function(result) {
 	var content = '<span class="result-block">';
 	content += '<span class="result-title">Feature</span>';
-	content += '<span class="result-content">Naam ' + result.properties["gm_naam"];
+	content += '<span class="result-content">Naam ' + result.properties[this.labelProperty];
 	switch(this.mode){
 		case "edit":
-			content += '<br/><a href="' + this.replaceId(result.properties["gm_code"],this.editLink) + '">Bewerk melding</a>';
+			content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.editLink) + '">Bewerk melding</a>';
+			this.edit.setFeature(result);
 			break
 		case "new":
-			content += '<br/><a href="' + this.replaceId(result.properties["gm_code"],this.createLink) + '">Maak melding</a>';
+			content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.createLink) + '">Maak melding</a>';
 			break
 		case "view":
 		default:
-			content += '<br/><a href="' + this.replaceId(result.properties["gm_code"],this.viewLink) + '">Bekijk melding</a>';
+			content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.viewLink) + '">Bekijk melding</a>';
 			break
 	}
 	content += '</span>';
