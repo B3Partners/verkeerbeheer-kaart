@@ -1,14 +1,7 @@
 b3p.GetFeature = function(options) {
-	this.editLink = options.editLink;
-	this.viewLink = options.viewLink;
-	this.createLink = options.createLink;
-	this.mode = options.mode;
-	this.popup = options.popup;
-	this.map = options.map;
-	this.maxResults = options.maxResults ? options.maxResults : 10;
-	this.layer = options.layers;
-	this.tolerance = options.tolerance ? options.tolerance : 4;
-	
+	options.maxResults = options.maxResults ? options.maxResults : 10;
+	options.tolerance = options.tolerance ? options.tolerance : 4;
+	initOptions(this,options);
 
 	var me = this;
 	this.map.on('singleclick',this.onMapClicked, this);

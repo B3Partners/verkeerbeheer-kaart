@@ -317,18 +317,18 @@ function vbmap(){
         if(this.mode === "view" || this.mode === "edit"){
             var getfeatureconfig = this.config.getFeature;
             getfeatureconfig.map = this.map;
-            getfeatureconfig.layers = this.thematicLayers.getLayers().getArray()[0];
+            getfeatureconfig.layer = this.thematicLayers.getLayers().getArray()[0];
             getfeatureconfig.mode = this.mode;
             getfeatureconfig.popup = this.popup;
             this.getFeature = new b3p.GetFeature(getfeatureconfig);
         }
 
-
-        this.edit = new b3p.EditControl({
-            map:this.map,
-            popup:this.popup,
-            mode:this.mode
-        });
+        var editConfig = this.config.getFeature;
+        editConfig.map = this.map;
+        editConfig.popup = this.popup;
+        editConfig.mode = this.mode;
+        
+        this.edit = new b3p.EditControl(editConfig);
         this.map.addControl(this.edit);
     },
 
@@ -367,5 +367,11 @@ function vbmap(){
             }),
             controls: []
         });
+    }
+}
+
+function initOptions(me,options){
+    for ( key in options){
+        me[key] = options[key];
     }
 }

@@ -1,8 +1,6 @@
-b3p.EditControl = function(opt_options) {
+b3p.EditControl = function(options) {
+    initOptions(this,options);
 
-	var options = opt_options || {};
-	this.map = options.map;
-	this.mode = options.mode;
 
     this.currentItem = null;
     this.buttons = [];
@@ -103,7 +101,7 @@ b3p.EditControl.prototype.addInteraction = function(){
                 style:  styleFunction
             });
             this.map.addInteraction(this.draw);
-            this.draw.on("drawend", function(){this.features.clear();}, this);
+            this.draw.on("drawend",this.featureDrawn, this);
             // no break, "new also requires a modify interactions"
         case "edit":  
             this.modify = new ol.interaction.Modify({
@@ -112,6 +110,22 @@ b3p.EditControl.prototype.addInteraction = function(){
             this.map.addInteraction(this.modify);
             break;
     };
+};
+
+b3p.EditControl.prototype.featureDrawn = function(evt){
+    this.features.clear();
+    var coords = evt.feature.getGeometry().getCoordinates();
+    var content = this.getPopupText();
+    this.popup.setInnerHTML (content);
+    this.popup.setPosition(coords);
+};
+
+b3p.EditControl.prototype.getPopupText = function(){
+
+    var content = '<span class="result-block">';
+    content += '<span class="result-title">Nieuwe ' + this.labels[1] + ' maken </span>';
+    content += '<br/><a href="' +this.createLink + '">Maak</a>';
+    return content;
 };
 
 b3p.EditControl.prototype.removeInteraction = function(){

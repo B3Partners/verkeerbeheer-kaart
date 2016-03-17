@@ -1,8 +1,7 @@
 var b3p = {};
-b3p.GPSControl = function(opt_options) {
+b3p.GPSControl = function(options) {
+	initOptions(this,options);
 
-	var options = opt_options || {};
-	this.map = options.map;
 	var me = this;
 	var toggle = function(e){
         e = e || window.event;

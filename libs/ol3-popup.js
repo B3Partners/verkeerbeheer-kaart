@@ -2,6 +2,8 @@
 
 b3p.Popup = function(options){
 	var me = this;
+	initOptions(this,options);
+
 	/**;
 	* Elements that make up the popup.
 	*/
