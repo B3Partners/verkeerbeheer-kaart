@@ -28,6 +28,7 @@ function vbmap(){
     this.wmtsParser =  null,
     this.getFeature = null,
     this.mode = null,
+    this.popup = null,
 
     this.init = function(config){
         this.config = config;
@@ -311,17 +312,21 @@ function vbmap(){
         var layerSwitcher = new ol.control.LayerSwitcher();
         this.map.addControl(layerSwitcher);
 
+        this.popup = new b3p.Popup({map:this.map});
+
         if(this.mode === "view" || this.mode === "edit"){
             var getfeatureconfig = this.config.getFeature;
             getfeatureconfig.map = this.map;
             getfeatureconfig.layers = this.thematicLayers.getLayers().getArray()[0];
             getfeatureconfig.mode = this.mode;
+            getfeatureconfig.popup = this.popup;
             this.getFeature = new b3p.GetFeature(getfeatureconfig);
         }
 
 
         this.edit = new b3p.EditControl({
             map:this.map,
+            popup:this.popup,
             mode:this.mode
         });
         this.map.addControl(this.edit);
