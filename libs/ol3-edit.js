@@ -6,7 +6,6 @@ b3p.EditControl = function(opt_options) {
 
     this.currentItem = null;
     this.buttons = [];
-    this.active = false;
     this.interaction = null;
 
     var me = this;
@@ -20,9 +19,15 @@ b3p.EditControl = function(opt_options) {
         });
     this.featureOverlay.setMap(this.map);
 
+    this.labels = {
+        1 : "calamiteit",
+        2 : "schouw",
+        3 : "melding"
+    }
 
     this.createButton(1,options);
-    this.createButton(2,options);    
+    this.createButton(2,options);
+    this.createButton(3,options);
 };
 
 ol.inherits(b3p.EditControl, ol.control.Control);
@@ -39,6 +44,7 @@ b3p.EditControl.prototype.createButton = function(typeMelding,options){
     var button = document.createElement('button');
     button.typeMelding = typeMelding;
     button.id = "editButton" + typeMelding;
+    button.title = "Maak een " + this.labels[typeMelding];
     button.addEventListener('click', toggle, false);
     button.addEventListener('touchstart', toggle, false);
 
@@ -66,6 +72,9 @@ b3p.EditControl.prototype.getStyle = function(a,b,me){
             break;
         case 2:
             src += 'radio_blauw.png';
+            break;
+        case 3:
+            src += 'radio_groen.png';
             break;
         default:
             break;
@@ -117,8 +126,8 @@ b3p.EditControl.prototype.toggle = function(button, type) {
     var element = button.parentElement;
     var parentClasses = element.className;
     
-    this.active = parentClasses.indexOf("-inactive") !== -1;
-    if(this.active){
+    var active = parentClasses.indexOf("-inactive") !== -1;
+    if(active){
         this.type = type;
         this.addInteraction();
         for( var b in this.buttons){
@@ -131,7 +140,7 @@ b3p.EditControl.prototype.toggle = function(button, type) {
         this.type = null;
         this.removeInteraction();
     }
-    this.toggleStyle(button, this.active);
+    this.toggleStyle(button, active);
 };
 
 b3p.EditControl.prototype.toggleStyle = function(button,active) {

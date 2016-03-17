@@ -87,7 +87,6 @@ html, body, #map {
 
 .edit{
     top: 10px;
-    /*left: .5em;*/
 }
 
 .edit button{
@@ -99,26 +98,34 @@ html, body, #map {
 .edit1 {
     left: 100px;
 }
-.edit2 {
-    left: 150px;
-    background-color: rgba(0,60,136,.7);
-}
-
-.edit1 button{
-    background-image: url('../images/radio_rood.png');
-}
-.edit2 button{
-    background-image: url('../images/radio_blauw.png');
-}
-
-.edit1 button{
-    background-image: url('../images/radio_rood.png');
-}
 
 .edit1-active button{
     background-image: url('../images/radio_rood_selected.png');
 }
 
+.edit1-inactive button{
+    background-image: url('../images/radio_rood.png');
+}
+
+.edit2 {
+    left: 150px;
+    background-color: rgba(0,60,136,.7);
+}
 .edit2-active button{
     background-image: url('../images/radio_blauw_selected.png');
+}
+.edit2-inactive button{
+    background-image: url('../images/radio_blauw.png');
+}
+
+
+.edit3 {
+    left: 180px;
+    background-color: rgba(0,60,136,.7);
+}
+.edit3-active button{
+    background-image: url('../images/radio_groen_selected.png');
+}
+.edit3-inactive button{
+    background-image: url('../images/radio_groen.png');
 }
