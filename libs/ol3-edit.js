@@ -84,8 +84,8 @@ b3p.EditControl.prototype.setFeature = function(geojson){
     if(!this.modify){
         this.addInteraction();
     }
+    this.activeFeature = geojson;
     this.features.clear();
-    console.log("setFeature",geojson);
     var feature = this.geojsonParser.readFeature(geojson);
     this.type = 2;//geojson.properties[this.typeProperty];
     this.featureOverlay.getSource().addFeature(feature);
@@ -99,9 +99,10 @@ b3p.EditControl.prototype.featureModified = function(evt){
 
 b3p.EditControl.prototype.featureDrawn = function(evt){
     this.features.clear();
-    var feature = evt.feature ? evt.feature : evt.features.getArray()[0];
+    var feature = evt.feature;
+    this.activeFeature = feature;
     var coords = feature.getGeometry().getCoordinates();
-    var content = this.getPopupText(coords[0], coords[1]);
+    var content = this.getPopupText();
     this.popup.setInnerHTML (content);
     this.popup.setPosition(coords);
 };
@@ -159,12 +160,13 @@ b3p.EditControl.prototype.addInteraction = function(){
 };
 
 
-b3p.EditControl.prototype.getPopupText = function(x, y){
+b3p.EditControl.prototype.getPopupText = function(){
     var newFeat = {properties : {}};
     var content = '<span class="result-block">';
     content += '<span class="result-title">Nieuwe ' + this.labels[1] + ' maken </span>';
     newFeat.properties [this.idProperty] = 0;
-    content += this.getLink(newFeat, x, y);
+    this.activeFeature = newFeat;
+    content += this.getLink(newFeat);
     return content;
 };
 
@@ -197,24 +199,43 @@ b3p.EditControl.prototype.toggle = function(button, type) {
     this.toggleStyle(button, active);
 };
 
-b3p.EditControl.prototype.getLink = function(result, x, y){
-    var coordinateString = "zLocX=" + x + "&zLocY=" + y;
+b3p.EditControl.prototype.getLink = function(result){
     var content = "";
+    var onclickhandler = 'onclick="vbmap.openlink()"';
     switch(this.mode){
         case "edit":
-            content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.editLink) + '&' + coordinateString + '">Bewerk melding</a>';
+            content += '<br/><a ' + onclickhandler + ' href="#">Bewerk melding</a>';
             this.setFeature(result);
             break
         case "new":
-            content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.createLink) + '&' + coordinateString + '">Maak</a>';
+            content += '<br/><a ' + onclickhandler + ' href="#">Maak</a>';
             break
         case "view":
         default:
-            content += '<br/><a href="' + this.replaceId(result.properties[this.idProperty],this.viewLink) + '&' + coordinateString + '">Bekijk melding</a>';
+            content += '<br/><a ' + onclickhandler + ' href="#">Bekijk melding</a>';
             break
     }
     return content;
 };
+
+b3p.EditControl.prototype.generateLink = function(){
+    var result = this.activeFeature;
+    var url = "";
+    switch(this.mode){
+        case "edit":
+            url =  this.replaceId(result.properties[this.idProperty],this.editLink) + '&';
+            break
+        case "new":
+            url = this.replaceId(result.properties[this.idProperty],this.createLink);
+            break
+        case "view":
+        default:
+            content += '<br/><a ' + onclickhandler + ' href="' + this.replaceId(result.properties[this.idProperty],this.viewLink) + '&'  + '">Bekijk melding</a>';
+            break
+    }
+    return url;
+};
+
 
 b3p.EditControl.prototype.toggleStyle = function(button,active) {
     var element = button.parentElement;

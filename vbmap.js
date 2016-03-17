@@ -35,8 +35,13 @@ function vbmap(){
         this.mode = config.mode;
         this.initLayers();
         this.initTools(this.config.tools);
+        window.vbmap = this;
     },
 
+    this.openlink = function(){
+        var url = this.edit.generateLink();
+        window.open(url, '_blank');
+    },
 
 
     /************************** API functions *********************/

@@ -37,7 +37,7 @@ b3p.GetFeature.prototype.onMapClicked = function(evt) {
 		success: function (response) {
 			if(response && response !== ""){
 				var data = JSON.parse(response);
-				me.handleResults(data.features, coordinate[0], coordinate[1]);
+				me.handleResults(data.features);
 				if(data.features.length > 0){
 					me.popup.setPosition(coordinate);
 				}
@@ -62,22 +62,22 @@ b3p.GetFeature.prototype.getBBOX = function(point){
 	return bbox;
 };
 
-b3p.GetFeature.prototype.handleResults = function(results, x, y) {
+b3p.GetFeature.prototype.handleResults = function(results) {
 	var numResults = Math.min(this.maxResults,results.length);
 	var content = '';
 	for(var i = 0 ; i < numResults ; i++){
 		var result = results[i];
-		content += this.handleResult(result, x, y);
+		content += this.handleResult(result);
 	}
 	this.popup.setInnerHTML(content);
 
 };
 
-b3p.GetFeature.prototype.handleResult = function(result, x, y) {
+b3p.GetFeature.prototype.handleResult = function(result) {
 	var content = '<span class="result-block">';
 	content += '<span class="result-title">Feature</span>';
 	content += '<span class="result-content">Naam ' + result.properties[this.labelProperty];
-	content += this.edit.getLink(result, x, y);
+	content += this.edit.getLink(result);
 	content += '</span>';
 	return content;
 };
