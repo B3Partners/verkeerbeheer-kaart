@@ -375,3 +375,4 @@ function initOptions(me,options){
         me[key] = options[key];
     }
 }
+var b3p = {};
