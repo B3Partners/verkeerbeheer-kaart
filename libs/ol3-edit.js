@@ -76,6 +76,12 @@ b3p.EditControl.prototype.generateURL = function(){
     return url;
 };
 
+b3p.EditControl.prototype.setPosition = function(coords){
+    this.popup.setPosition(coords);
+    var feature = this.featureOverlay.getSource().getFeatures()[0];
+    var coords = feature.getGeometry().setCoordinates(coords);
+};
+
 /*
  * Set a feature to the map as a vector.
  */
@@ -161,7 +167,7 @@ b3p.EditControl.prototype.removeInteraction = function(){
 b3p.EditControl.prototype.getPopupText = function(){
     var newFeat = {properties : {}};
     var content = '<span class="result-block">';
-    content += '<span class="result-title">Nieuwe ' + this.labels[1] + ' maken </span>';
+    content += '<span class="result-title">Nieuwe ' + this.buttonConfig[this.type].label + ' maken </span>';
     newFeat.properties [this.idProperty] = 0;
     this.activeFeature = newFeat;
     content += this.getLink(newFeat);
@@ -170,20 +176,22 @@ b3p.EditControl.prototype.getPopupText = function(){
 
 b3p.EditControl.prototype.getLink = function(result){
     var content = "";
-    var onclickhandler = 'onclick="vbmap.openlink()"';
+    var onclickhandlerOpen = 'onclick="vbmap.openlink()"';
+    var onclickhandlerGPS = 'onclick="vbmap.useGPS()"';
     switch(this.mode){
         case "edit":
-            content += '<br/><a ' + onclickhandler + ' href="#">Bewerk melding</a>';
+            content += '<br/><a ' + onclickhandlerOpen + ' href="#">Bewerk melding</a>';
             this.setFeature(result);
             break
         case "new":
-            content += '<br/><a ' + onclickhandler + ' href="#">Maak</a>';
+            content += '<br/><a ' + onclickhandlerOpen + ' href="#">Maak</a>';
             break
         case "view":
         default:
-            content += '<br/><a ' + onclickhandler + ' href="#">Bekijk melding</a>';
+            content += '<br/><a ' + onclickhandlerOpen + ' href="#">Bekijk melding</a>';
             break
     }
+    content += '<br/><a ' + onclickhandlerGPS + ' href="#">Gebruik GPS locatie</a>';
     return content;
 };
 

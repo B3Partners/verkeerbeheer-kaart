@@ -38,25 +38,25 @@ function vbmap(){
         window.vbmap = this;
     },
 
-    this.openlink = function(){
-        var url = this.edit.generateURL();
-        window.open(url, '_blank');
-    },
 
 
     /************************** API functions *********************/
 
     /**
-     * getFeatureLocation
-     * Function to retrieve the location of the drawn feature.
-     * @returns An array of coordinates [xcoord, ycoord]. Empty array when no feature is drawn.
+     * openLink
+     * Function to save the modifications/new feature to the database. Called when clicking on the link in the popup.
      */
-    this.getFeatureLocation = function(){
-        var coords = [];
-        if(this.features.getLength() > 0){
-            coords = this.features.getArray()[0].getGeometry().getCoordinates()
-        }
-        return coords;
+    this.openlink = function(){
+        var url = this.edit.generateURL();
+        window.open(url, '_blank');
+    },
+
+    this.useGPS = function(){
+        var me = this;
+        var f = function(coords){
+            me.edit.setPosition(coords);
+        };
+        this.getLocation(f);
     },
 
     /*
