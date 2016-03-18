@@ -109,7 +109,6 @@ html, body, #map {
 
 .edit2 {
     left: 150px;
-    background-color: rgba(0,60,136,.7);
 }
 .edit2-active button{
     background-image: url('../images/radio_blauw_selected.png');
@@ -118,10 +117,8 @@ html, body, #map {
     background-image: url('../images/radio_blauw.png');
 }
 
-
 .edit3 {
     left: 190px;
-    background-color: rgba(0,60,136,.7);
 }
 .edit3-active button{
     background-image: url('../images/radio_groen_selected.png');
