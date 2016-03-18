@@ -219,20 +219,24 @@ b3p.EditControl.prototype.getLink = function(result){
 };
 
 b3p.EditControl.prototype.generateLink = function(){
+    var feature = this.featureOverlay.getSource().getFeatures()[0];
+    var coords = feature.getGeometry().getCoordinates()
+    var coordString = "&zLocX=" + coords[0].toFixed(2) + "&zLocY=" + coords[1].toFixed(2);
     var result = this.activeFeature;
     var url = "";
     switch(this.mode){
         case "edit":
-            url =  this.replaceId(result.properties[this.idProperty],this.editLink) + '&';
+            url =  this.replaceId(result.properties[this.idProperty],this.editLink);
             break
         case "new":
             url = this.replaceId(result.properties[this.idProperty],this.createLink);
             break
         case "view":
         default:
-            content += '<br/><a ' + onclickhandler + ' href="' + this.replaceId(result.properties[this.idProperty],this.viewLink) + '&'  + '">Bekijk melding</a>';
+            url = this.replaceId(result.properties[this.idProperty],this.viewLink);
             break
     }
+    url += coordString;
     return url;
 };
 
