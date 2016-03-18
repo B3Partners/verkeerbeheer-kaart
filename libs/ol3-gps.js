@@ -84,10 +84,12 @@ ol.inherits(b3p.GPSControl, ol.control.Control);
 b3p.GPSControl.prototype.getLocation = function(returnFunction){
 	var loc = this.geolocation.getPosition();
 	if(loc === undefined){
+		var me = this;
 		if(!this.tracking){
 			this.toggle();
 		}
 		var f = function(event){
+			me.toggle();
 		    returnFunction(event.target.getPosition());
 		};
 		this.geolocation.once('change:position',f);
