@@ -96,7 +96,7 @@ html, body, #map {
 }
 
 .edit1 {
-    left: 100px;
+    left: 110px;
 }
 
 .edit1-active button{
@@ -120,7 +120,7 @@ html, body, #map {
 
 
 .edit3 {
-    left: 180px;
+    left: 190px;
     background-color: rgba(0,60,136,.7);
 }
 .edit3-active button{
