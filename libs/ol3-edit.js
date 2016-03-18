@@ -177,6 +177,7 @@ b3p.EditControl.prototype.removeInteraction = function(){
 
 b3p.EditControl.prototype.toggle = function(button, type) {
     if(this.features){
+        this.popup.setPosition()
         this.features.clear();
     }
     var element = button.parentElement;
@@ -229,13 +230,14 @@ b3p.EditControl.prototype.generateLink = function(){
             url =  this.replaceId(result.properties[this.idProperty],this.editLink);
             break
         case "new":
-            url = this.replaceId(result.properties[this.idProperty],this.createLink);
+            url = this.createLink;
             break
         case "view":
         default:
             url = this.replaceId(result.properties[this.idProperty],this.viewLink);
             break
     }
+    url += "&type=" + this.type;
     url += coordString;
     return url;
 };
