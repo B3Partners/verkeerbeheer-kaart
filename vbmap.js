@@ -325,6 +325,7 @@ function vbmap(){
         editConfig.map = this.map;
         editConfig.popup = this.popup;
         editConfig.mode = this.mode;
+        editConfig.buttonConfig = this.config.edit;
 
         this.edit = new b3p.EditControl(editConfig);
        // this.map.addControl(this.edit);

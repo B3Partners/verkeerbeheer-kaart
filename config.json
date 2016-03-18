@@ -11,7 +11,21 @@ var config = {
       idProperty : "wk_code",
       labelProperty : "wk_naam",
       typeProperty: "type"
-   },
+  },
+  edit:{
+        1 :{ 
+          label :  "calamiteit",
+          button: "radio_rood.png"
+          },
+        2 :{ 
+          label :   "schouw",
+          button: "radio_blauw.png"
+          },
+        3 :{ 
+          label :   "melding",
+          button: "radio_groen.png"
+        }
+  },
   baseLayers:[
     {
       url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png",

@@ -14,6 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+ /**
+ * This class controls the adding and editting of features. It creates the buttons, handles the placement of the features and provides the callback when the user clicks 
+ * on the link to save the feature to the database.
+ *
+ */
 b3p.EditControl = function(options) {
     initOptions(this,options);
 
@@ -33,16 +38,11 @@ b3p.EditControl = function(options) {
         });
     this.featureOverlay.setMap(this.map);
 
-    this.labels = {
-        1 : "calamiteit",
-        2 : "schouw",
-        3 : "melding"
-    }
-
     if(this.mode === "new"){
-        this.createButton(1,options);
-        this.createButton(2,options);
-        this.createButton(3,options);
+        for (var key in this.buttonConfig){
+            var button = this.buttonConfig[key];
+            this.createButton(key, button);
+        }
     }
 };
 
@@ -60,7 +60,7 @@ b3p.EditControl.prototype.createButton = function(typeMelding,options){
     var button = document.createElement('button');
     button.typeMelding = typeMelding;
     button.id = "editButton" + typeMelding;
-    button.title = "Maak een " + this.labels[typeMelding];
+    button.title = "Maak een " + options.label;
     button.addEventListener('click', toggle, false);
     button.addEventListener('touchstart', toggle, false);
 
@@ -109,20 +109,8 @@ b3p.EditControl.prototype.featureDrawn = function(evt){
 
 b3p.EditControl.prototype.getStyle = function(a,b,me){
     var src = 'images/';
-    switch(me.type){
-        case 1:
-            src += 'radio_rood.png';
-            break;
-        case 2:
-            src += 'radio_blauw.png';
-            break;
-        case 3:
-            src += 'radio_groen.png';
-            break;
-        default:
-            src += 'radio_rood.png';
-            break;
-    }
+    src += this.buttonConfig[me.type].button;
+
     return new ol.style.Style({
         image: new ol.style.Icon({
             scale: 1,
