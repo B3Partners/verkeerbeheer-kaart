@@ -39,7 +39,7 @@ function vbmap(){
     },
 
     this.openlink = function(){
-        var url = this.edit.generateLink();
+        var url = this.edit.generateURL();
         window.open(url, '_blank');
     },
 

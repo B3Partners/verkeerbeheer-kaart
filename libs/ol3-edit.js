@@ -48,6 +48,79 @@ b3p.EditControl = function(options) {
 
 ol.inherits(b3p.EditControl, ol.control.Control);
 
+/* Public API functions */
+
+/*
+ *  Function to generate the URL to be called when clicked on the link in the popup. This function adds the geometry to the URL.
+ */
+b3p.EditControl.prototype.generateURL = function(){
+    var feature = this.featureOverlay.getSource().getFeatures()[0];
+    var coords = feature.getGeometry().getCoordinates()
+    var coordString = "&zLocX=" + coords[0].toFixed(2) + "&zLocY=" + coords[1].toFixed(2);
+    var feature = this.activeFeature;
+    var url = "";
+    switch(this.mode){
+        case "edit":
+            url =  this.replaceId(feature.properties[this.idProperty],this.editLink);
+            break
+        case "new":
+            url = this.createLink;
+            break
+        case "view":
+        default:
+            url = this.replaceId(feature.properties[this.idProperty],this.viewLink);
+            break
+    }
+    url += "&type=" + this.type;
+    url += coordString;
+    return url;
+};
+
+/*
+ * Set a feature to the map as a vector.
+ */
+b3p.EditControl.prototype.setFeature = function(geojson){
+    if(!this.modify){
+        this.addInteraction();
+    }
+    this.activeFeature = geojson;
+    this.features.clear();
+    var feature = this.geojsonParser.readFeature(geojson);
+    this.type = geojson.properties[this.typeProperty] ? geojson.properties[this.typeProperty] : 1;
+    this.featureOverlay.getSource().addFeature(feature);
+};
+
+
+/* Helper functions */
+
+b3p.EditControl.prototype.addInteraction = function(){
+    var me = this;
+    var styleFunction = function(a,b,c){
+        return me.getStyle(a,b,me);
+    };
+
+    switch(this.mode){
+        case "view":
+            break;
+        case "new":
+            this.draw = new ol.interaction.Draw({
+                features: this.features,
+                type: "Point",
+                style:  styleFunction
+            });
+            this.map.addInteraction(this.draw);
+            this.draw.on("drawend",this.featureDrawn, this);
+            // no break, "new also requires a modify interactions"
+        case "edit":  
+            this.modify = new ol.interaction.Modify({
+                features: this.features
+            });
+            this.modify.on("modifyend",this.featureModified,this);
+            this.map.addInteraction(this.modify);
+            break;
+    };
+};
+
 b3p.EditControl.prototype.createButton = function(typeMelding,options){
     var me = this;
     var toggle = function(e){
@@ -80,31 +153,57 @@ b3p.EditControl.prototype.createButton = function(typeMelding,options){
     this.buttons.push(button);
 };
 
-b3p.EditControl.prototype.setFeature = function(geojson){
-    if(!this.modify){
-        this.addInteraction();
+b3p.EditControl.prototype.removeInteraction = function(){
+    this.map.removeInteraction(this.modify);
+    this.map.removeInteraction(this.draw);
+};
+
+b3p.EditControl.prototype.getPopupText = function(){
+    var newFeat = {properties : {}};
+    var content = '<span class="result-block">';
+    content += '<span class="result-title">Nieuwe ' + this.labels[1] + ' maken </span>';
+    newFeat.properties [this.idProperty] = 0;
+    this.activeFeature = newFeat;
+    content += this.getLink(newFeat);
+    return content;
+};
+
+b3p.EditControl.prototype.getLink = function(result){
+    var content = "";
+    var onclickhandler = 'onclick="vbmap.openlink()"';
+    switch(this.mode){
+        case "edit":
+            content += '<br/><a ' + onclickhandler + ' href="#">Bewerk melding</a>';
+            this.setFeature(result);
+            break
+        case "new":
+            content += '<br/><a ' + onclickhandler + ' href="#">Maak</a>';
+            break
+        case "view":
+        default:
+            content += '<br/><a ' + onclickhandler + ' href="#">Bekijk melding</a>';
+            break
     }
-    this.activeFeature = geojson;
-    this.features.clear();
-    var feature = this.geojsonParser.readFeature(geojson);
-    this.type = 2;//geojson.properties[this.typeProperty];
-    this.featureOverlay.getSource().addFeature(feature);
+    return content;
 };
 
-b3p.EditControl.prototype.featureModified = function(evt){
-    var feature = evt.features.getArray()[0];
-    var coords = feature.getGeometry().getCoordinates();
-    this.popup.setPosition(coords);
+b3p.EditControl.prototype.toggleStyle = function(button,active) {
+    var element = button.parentElement;
+    var parentClasses = element.className;
+    
+    var editElement = "edit" + button.typeMelding;
+    var activeClass = editElement + "-active";
+    var inactiveClass = editElement + "-inactive";
+    if(active){
+        element.className = element.className.split(inactiveClass).join(activeClass);
+    }else{
+        element.className = element.className.split(activeClass).join(inactiveClass);
+    }
 };
 
-b3p.EditControl.prototype.featureDrawn = function(evt){
-    this.features.clear();
-    var feature = evt.feature;
-    this.activeFeature = feature;
-    var coords = feature.getGeometry().getCoordinates();
-    var content = this.getPopupText();
-    this.popup.setInnerHTML (content);
-    this.popup.setPosition(coords);
+b3p.EditControl.prototype.replaceId = function(id, link){
+    var newLink = link.replace("[meldingid]",id);
+    return newLink;
 };
 
 b3p.EditControl.prototype.getStyle = function(a,b,me){
@@ -118,50 +217,7 @@ b3p.EditControl.prototype.getStyle = function(a,b,me){
         })});
 };
 
-b3p.EditControl.prototype.addInteraction = function(){
-
-    var me = this;
-    var styleFunction = function(a,b,c){
-        return me.getStyle(a,b,me);
-    };
-
-    switch(this.mode){
-        case "view":
-            break;
-        case "new":
-            this.draw = new ol.interaction.Draw({
-                features: this.features,
-                type: "Point",
-                style:  styleFunction
-            });
-            this.map.addInteraction(this.draw);
-            this.draw.on("drawend",this.featureDrawn, this);
-            // no break, "new also requires a modify interactions"
-        case "edit":  
-            this.modify = new ol.interaction.Modify({
-                features: this.features
-            });
-            this.modify.on("modifyend",this.featureModified,this);
-            this.map.addInteraction(this.modify);
-            break;
-    };
-};
-
-
-b3p.EditControl.prototype.getPopupText = function(){
-    var newFeat = {properties : {}};
-    var content = '<span class="result-block">';
-    content += '<span class="result-title">Nieuwe ' + this.labels[1] + ' maken </span>';
-    newFeat.properties [this.idProperty] = 0;
-    this.activeFeature = newFeat;
-    content += this.getLink(newFeat);
-    return content;
-};
-
-b3p.EditControl.prototype.removeInteraction = function(){
-    this.map.removeInteraction(this.modify);
-    this.map.removeInteraction(this.draw);
-};
+/* Event handlers */
 
 b3p.EditControl.prototype.toggle = function(button, type) {
     if(this.features){
@@ -188,65 +244,18 @@ b3p.EditControl.prototype.toggle = function(button, type) {
     this.toggleStyle(button, active);
 };
 
-b3p.EditControl.prototype.getLink = function(result){
-    var content = "";
-    var onclickhandler = 'onclick="vbmap.openlink()"';
-    switch(this.mode){
-        case "edit":
-            content += '<br/><a ' + onclickhandler + ' href="#">Bewerk melding</a>';
-            this.setFeature(result);
-            break
-        case "new":
-            content += '<br/><a ' + onclickhandler + ' href="#">Maak</a>';
-            break
-        case "view":
-        default:
-            content += '<br/><a ' + onclickhandler + ' href="#">Bekijk melding</a>';
-            break
-    }
-    return content;
+b3p.EditControl.prototype.featureModified = function(evt){
+    var feature = evt.features.getArray()[0];
+    var coords = feature.getGeometry().getCoordinates();
+    this.popup.setPosition(coords);
 };
 
-b3p.EditControl.prototype.generateLink = function(){
-    var feature = this.featureOverlay.getSource().getFeatures()[0];
-    var coords = feature.getGeometry().getCoordinates()
-    var coordString = "&zLocX=" + coords[0].toFixed(2) + "&zLocY=" + coords[1].toFixed(2);
-    var result = this.activeFeature;
-    var url = "";
-    switch(this.mode){
-        case "edit":
-            url =  this.replaceId(result.properties[this.idProperty],this.editLink);
-            break
-        case "new":
-            url = this.createLink;
-            break
-        case "view":
-        default:
-            url = this.replaceId(result.properties[this.idProperty],this.viewLink);
-            break
-    }
-    url += "&type=" + this.type;
-    url += coordString;
-    return url;
-};
-
-
-b3p.EditControl.prototype.toggleStyle = function(button,active) {
-    var element = button.parentElement;
-    var parentClasses = element.className;
-    
-    var editElement = "edit" + button.typeMelding;
-    var activeClass = editElement + "-active";
-    var inactiveClass = editElement + "-inactive";
-	if(active){
-        element.className = element.className.split(inactiveClass).join(activeClass);
-	}else{
-        element.className = element.className.split(activeClass).join(inactiveClass);
-	}
-};
-
-
-b3p.EditControl.prototype.replaceId = function(id, link){
-    var newLink = link.replace("[meldingid]",id);
-    return newLink;
+b3p.EditControl.prototype.featureDrawn = function(evt){
+    this.features.clear();
+    var feature = evt.feature;
+    this.activeFeature = feature;
+    var coords = feature.getGeometry().getCoordinates();
+    var content = this.getPopupText();
+    this.popup.setInnerHTML (content);
+    this.popup.setPosition(coords);
 };
