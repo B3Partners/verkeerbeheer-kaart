@@ -47,12 +47,19 @@ var config = {
       label : "Luchtfoto"
     }
   ],
-  thematicLayers:[
+ thematicLayers:[
     {
       url: "http://localhost/cgi-bin/mapserv?map=/var/www/html/verkeerbeheer-kaart/mapfile/verkeersbeheer.map",
       layers: ["buurt"],
       type: "WMS",
       label: "Buurten",
+      visible:true
+    },
+    {
+      url: "http://mapserver.verkeersbeheer.nl/cgi-bin/mapserv.exe?map=c:\\maps\\verkeersbeheer.map",
+      layers: ["gemeentes"],
+      type: "WMS",
+      label: "GemVB",
       visible:true
     }
   ],
