@@ -215,8 +215,7 @@ b3p.EditControl.prototype.replaceId = function(id, link){
 };
 
 b3p.EditControl.prototype.getStyle = function(a,b,me){
-    var src = 'images/';
-    src += this.buttonConfig[me.type].button;
+    var src = 'images/icon-' + me.type + ".png";
 
     return new ol.style.Style({
         image: new ol.style.Icon({

@@ -1,8 +1,8 @@
 html, body, #map {
     padding: 0;
     margin: 0;
-    height: 90%;
-    width: 90%;
+    height: 100%;
+    width: 100%;
 }
 
 /*GPS*/
@@ -100,29 +100,29 @@ html, body, #map {
 }
 
 .edit1-active button{
-    background-image: url('../images/radio_rood_selected.png');
+    background-image: url('../images/icon-1.png');
 }
 
 .edit1-inactive button{
-    background-image: url('../images/radio_rood.png');
+    background-image: url('../images/icon-1.png');
 }
 
 .edit2 {
     left: 150px;
 }
 .edit2-active button{
-    background-image: url('../images/radio_blauw_selected.png');
+    background-image: url('../images/icon-2.png');
 }
 .edit2-inactive button{
-    background-image: url('../images/radio_blauw.png');
+    background-image: url('../images/icon-2.png');
 }
 
 .edit3 {
     left: 190px;
 }
 .edit3-active button{
-    background-image: url('../images/radio_groen_selected.png');
+    background-image: url('../images/icon-3.png');
 }
 .edit3-inactive button{
-    background-image: url('../images/radio_groen.png');
+    background-image: url('../images/icon-3.png');
 }

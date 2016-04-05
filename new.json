@@ -8,9 +8,9 @@ var config = {
       createLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=0", // http://<server>.nl/<path>
       viewLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]", // http://<server>.nl/<path>/[meldingid]
       editLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]", // http://<server>.nl/<path>/[meldingid]
-      idProperty : "wk_code",
-      labelProperty : "wk_naam",
-      typeProperty: "type"
+      idProperty : "zId",
+      labelProperty : "zWeg",
+      typeProperty: "zTypeRef"
   },
   edit:{
         1 :{ 
@@ -48,20 +48,14 @@ var config = {
     }
   ],
  thematicLayers:[
-    {
-      url: "http://localhost/cgi-bin/mapserv?map=/var/www/html/verkeerbeheer-kaart/mapfile/verkeersbeheer.map",
-      layers: ["buurt"],
-      type: "WMS",
-      label: "Buurten",
-      visible:true
-    },
-    {
+  {
       url: "http://mapserver.verkeersbeheer.nl/cgi-bin/mapserv.exe?map=c:\\maps\\verkeersbeheer.map",
-      layers: ["gemeentes"],
+      layers: ["Meldingen"],
       type: "WMS",
-      label: "GemVB",
+      label: "Meldingen",
       visible:true
     }
+    
   ],
   tools: [
     {tool_id: "MousePosition"},

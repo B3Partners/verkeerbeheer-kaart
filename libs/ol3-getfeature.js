@@ -20,6 +20,8 @@ b3p.GetFeature = function(options) {
 	initOptions(this,options);
 
 	var me = this;
+	this.gmlformat = new ol.format.WFS();
+	this.geojsonformat = new ol.format.GeoJSON();
 	this.map.on('singleclick',this.onMapClicked, this);
 };
 
@@ -28,7 +30,8 @@ b3p.GetFeature.prototype.onMapClicked = function(evt) {
 	//this.popup.setPosition(coordinate);
 	var extent = this.getBBOX(coordinate);
 	var url = this.layer.getSource().getUrl() + '&service=WFS&' + 'version=1.1.0&request=GetFeature&typename=' + this.layer.getSource().getParams().layers.join(",") +
-		'&outputFormat=geojson&srsName=EPSG:28992&bbox=' + extent + '';
+		'&srsName=EPSG:28992&bbox=' + extent + '';
+		//&outputFormat=geojson
 	var me = this;
 	$.ajax({
 		url: url,
@@ -36,10 +39,13 @@ b3p.GetFeature.prototype.onMapClicked = function(evt) {
 		dataType: 'text',
 		success: function (response) {
 			if(response && response !== ""){
-				var data = JSON.parse(response);
-				me.handleResults(data.features);
-				if(data.features.length > 0){
-					me.popup.setPosition(coordinate);
+				var data = me.gmlformat.readFeatures(response);
+				if(data.length > 0){
+					//var data = JSON.parse(response);
+					me.handleResults(data);
+					if(data.length > 0){
+						me.popup.setPosition(coordinate);
+					}
 				}
 			}
 		},
@@ -76,8 +82,9 @@ b3p.GetFeature.prototype.handleResults = function(results) {
 b3p.GetFeature.prototype.handleResult = function(result) {
 	var content = '<span class="result-block">';
 	content += '<span class="result-title">Feature</span>';
-	content += '<span class="result-content">Naam ' + result.properties[this.labelProperty];
-	content += this.edit.getLink(result);
+	content += '<span class="result-content">Naam ' + result.getProperties()[this.labelProperty];
+	var geojson = this.geojsonformat.writeFeatureObject(result);
+	content += this.edit.getLink(geojson);
 	content += '</span>';
 	return content;
 };
