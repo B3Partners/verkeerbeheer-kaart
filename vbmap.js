@@ -94,7 +94,9 @@ function vbmap(){
                 var f = {};
                 f[key] = Array.isArray(filter[key]) ? filter[key].join(",") : filter[key];
                 f[key + "_active"] = true;
-                layer.getSource().updateParams(f);
+                if(f[key] !== ""){
+                    layer.getSource().updateParams(f);
+                }
             }
         }
      },
