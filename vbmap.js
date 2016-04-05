@@ -75,15 +75,11 @@ function vbmap(){
                 id: "",
                 schade_nr: "",
                 weg: [],
-                hmp:{
-                    begin: "",
-                    eind: ""
-                },
+                hmpbegin: "",
+                hmpeind: "",
                 coordinator:[],
-                datum:{
-                    begin: "",
-                    eind: ""
-                },
+                datumbegin: "",
+                datumeind: "",
                 type: [],
                 categorie: [],
                 status: []
@@ -96,7 +92,7 @@ function vbmap(){
             this.resetFilter(layer);
             for (var key in filter){
                 var f = {};
-                f[key] = filter[key].constructor === Array ? filter[key].join(",") : filter[key];
+                f[key] = Array.isArray(filter[key]) ? filter[key].join(",") : filter[key];
                 f[key + "_active"] = true;
                 layer.getSource().updateParams(f);
             }
@@ -369,7 +365,7 @@ function vbmap(){
             interactions: interactions,
             view: new ol.View({
                 projection: projection,
-                center: [108528, 446933],
+                center: [154863, 373544],
                 zoom: zoom,
                 minResolution: 0.105,
                 maxResolution: 3440.64,
