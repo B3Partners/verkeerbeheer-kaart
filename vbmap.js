@@ -208,6 +208,9 @@ function vbmap(){
         var tms = new ol.layer.Tile({
             source: tmsSource,
             type: base ? "base" : null,
+            opacity: layer.opacity ? layer.opacity : 1,
+            maxResolution: layer.maxResolution,
+            minResolution: layer.minResolution,
             title: layer.label,
             visible: layer.visible ? layer.visible : false
         });
@@ -235,7 +238,9 @@ function vbmap(){
 
             var source =  new ol.source.WMTS(options);
             var layer = new ol.layer.Tile({
-                opacity: 1,
+                opacity: layerConfig.opacity ? layerConfig.opacity : 1,
+                maxResolution: layerConfig.maxResolution,
+                minResolution: layerConfig.minResolution,
                 title: layerConfig.label,
                 type: base ? "base" : null,
                 source:source,
@@ -260,6 +265,9 @@ function vbmap(){
         var layer = new ol.layer.Image({
             type: base ? "base" : null,
             title: layerConfig.label,
+            opacity: layerConfig.opacity ? layerConfig.opacity : 1,
+            maxResolution: layerConfig.maxResolution,
+            minResolution: layerConfig.minResolution,
             visible: layerConfig.visible ? layerConfig.visible : false,
             source: new ol.source.ImageWMS({
                 url: layerConfig.url,

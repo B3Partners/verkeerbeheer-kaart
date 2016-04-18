@@ -48,14 +48,21 @@ var config = {
     }
   ],
  thematicLayers:[
-  {
+  /*{
       url: "http://mapserver.verkeersbeheer.nl/cgi-bin/mapserv.exe?map=c:\\maps\\verkeersbeheer.map",
-      layers: ["Meldingen"],
+      layers: ["meldingenFilter"],
       type: "WMS",
       label: "Meldingen",
       visible:true
+    },*/
+    {
+      url: "https://geodata.nationaalgeoregister.nl/nwbwegen/wms",
+      layers: ["hectopunten"],
+      type: "WMS",
+      label: "hectopunten",
+      visible:true
     }
-    
+   
   ],
   tools: [
     {tool_id: "MousePosition"},
