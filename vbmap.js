@@ -58,6 +58,16 @@ function vbmap(){
         };
         this.getLocation(f);
     },
+    
+    /**
+     * zoomTo
+     * Function to zoom/move to a coordinate.
+     */
+     
+     this.zoomTo = function(x, y){
+        this.map.getView().setCenter([x,y]);
+        this.map.getView().setZoom(183);
+     },
 
     /*
      * getLocation
