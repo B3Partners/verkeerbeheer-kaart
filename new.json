@@ -17,12 +17,16 @@ var config = {
           label :  "calamiteit",
           button: "radio_rood.png"
           },
-        2 :{ 
+    2 :{ 
+          label :   "verkeerskundige melding",
+          button: "radio_groen.png"
+        },
+        3 :{ 
           label :   "schouw",
           button: "radio_blauw.png"
           },
-        3 :{ 
-          label :   "melding",
+    6 :{ 
+          label :   "WIS",
           button: "radio_groen.png"
         }
   },

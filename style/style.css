@@ -77,6 +77,17 @@ html, body, #map {
     display:block;
 }
 
+.result-content{
+    display:block;
+}
+
+.result-head{
+    font-weight: bold;
+}
+
+.result-value{
+}
+
 .result-title {
     display:block;
     font-weight: bold;
@@ -125,4 +136,15 @@ html, body, #map {
 }
 .edit3-inactive button{
     background-image: url('../images/icon-3.png');
+}
+
+
+.edit6 {
+    left: 230px;
+}
+.edit6-active button{
+    background-image: url('../images/icon-6.png');
+}
+.edit6-inactive button{
+    background-image: url('../images/icon-6.png');
 }
