@@ -58,16 +58,26 @@ function vbmap(){
         };
         this.getLocation(f);
     },
-    
-    /**
-     * zoomTo
-     * Function to zoom/move to a coordinate.
-     */
-     
-     this.zoomTo = function(x, y){
-        this.map.getView().setCenter([x,y]);
-        this.map.getView().setZoom(183);
-     },
+	
+	/**
+	 * zoomTo
+	 * Function to zoom/move to a coordinate.
+	 */
+	 
+	 this.zoomTo = function(x, y){
+		this.map.getView().setCenter([x,y]);
+		this.map.getView().setZoom(18);
+	 },
+	 
+	/**
+	 * zoomTo
+	 * Function to zoom/move to a coordinate.
+	 */
+	 
+	 this.zoomToExtent = function(minx, miny, maxx, maxy){
+		var extent = [minx, miny, maxx, maxy];
+		this.map.getView().fit(extent, this.map.getSize());
+	 },
 
     /*
      * getLocation
@@ -261,23 +271,27 @@ function vbmap(){
     },
 
     this.initWMSLayer = function (layerConfig, base){
-       /* var layer = new ol.layer.Tile({
+        var layer = new ol.layer.Tile({
             type: base ? "base" : null,
             title: layerConfig.label,
+			opacity: layerConfig.opacity ? layerConfig.opacity : 1,
+			maxResolution: layerConfig.maxResolution,
+			minResolution: layerConfig.minResolution,
             visible: layerConfig.visible ? layerConfig.visible : false,
             source: new ol.source.TileWMS({
                 url: layerConfig.url,
                 params: {
-                    layers: layerConfig.layers
+                    layers: layerConfig.layers,
+                    query_layers: layerConfig.layers
                 }
             })
-        });*/
-        var layer = new ol.layer.Image({
+        });
+        /*var layer = new ol.layer.Image({
             type: base ? "base" : null,
             title: layerConfig.label,
-            opacity: layerConfig.opacity ? layerConfig.opacity : 1,
-            maxResolution: layerConfig.maxResolution,
-            minResolution: layerConfig.minResolution,
+			opacity: layerConfig.opacity ? layerConfig.opacity : 1,
+			maxResolution: layerConfig.maxResolution,
+			minResolution: layerConfig.minResolution,
             visible: layerConfig.visible ? layerConfig.visible : false,
             source: new ol.source.ImageWMS({
                 url: layerConfig.url,
@@ -286,7 +300,7 @@ function vbmap(){
                     query_layers: layerConfig.layers
                 }
             })
-        });
+        });*/
         return layer;
     },
 
