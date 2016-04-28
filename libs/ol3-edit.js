@@ -220,7 +220,8 @@ b3p.EditControl.prototype.getStyle = function(a,b,me){
     return new ol.style.Style({
         image: new ol.style.Icon({
             scale: 1,
-            src: src
+            src: src,
+            anchor: [0.5, 1]
         })});
 };
 
