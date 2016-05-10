@@ -32,12 +32,12 @@ html, body, #map {
 /* Featureinfo popup */
 .ol-popup {
     position: absolute;
-    background-color: white;
+	background-color:#E9EDF0;
     -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
     filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
     padding: 15px;
     border-radius: 10px;
-    border: 1px solid #cccccc;
+    border: 1px solid #000;
     bottom: 12px;
     left: -50px;
     min-width: 280px;
@@ -58,7 +58,7 @@ html, body, #map {
     margin-left: -10px;
 }
 .ol-popup:before {
-    border-top-color: #cccccc;
+    border-top-color: #000;
     border-width: 11px;
     left: 48px;
     margin-left: -11px;
@@ -75,6 +75,8 @@ html, body, #map {
 
 .result-block{
     display:block;
+	background-color:#E9EDF0;
+    font-family: Verdana, Geneva, sans-serif;font-size:11px;
 }
 
 .result-content{
@@ -82,7 +84,7 @@ html, body, #map {
 }
 
 .result-head{
-    font-weight: bold;
+	font-weight: bold;
 }
 
 .result-value{

@@ -29,7 +29,7 @@ b3p.GetFeature.prototype.onMapClicked = function(evt) {
 	var coordinate = evt.coordinate;
 	//this.popup.setPosition(coordinate);
 	var extent = this.getBBOX(coordinate);
-	var url = this.layer.getSource().getUrl() + '&service=WFS&' + 'version=1.1.0&request=GetFeature&typename=' + this.layer.getSource().getParams().layers.join(",") +
+	var url = this.layer.getSource().getUrls()[0] + '&service=WFS&' + 'version=1.1.0&request=GetFeature&typename=' + this.layer.getSource().getParams().layers.join(",") +
 		'&srsName=EPSG:28992&bbox=' + extent + '';
 		//&outputFormat=geojson
 	var me = this;

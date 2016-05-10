@@ -42,8 +42,8 @@ b3p.Popup = function(options){
 	*/
 	this.overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
 		element: container,
-		autoPan: true,
 		offset: [0,-32],
+		autoPan: true,
 		autoPanAnimation: {
 			duration: 250
 		}
