@@ -37,13 +37,13 @@ var config = {
       type: "TMS",
       visible: true
     },
-    {
+   /* {
       url: "https://geodata.nationaalgeoregister.nl/wmts/brtachtergrondkaart?request=GetCapabilities",
       label :"BRT",
       projection: "EPSG:28992",
       layer: "brtachtergrondkaart",
       type: "WMTS"
-    },
+    },*/
     {
       url: "http://webservices.gbo-provincies.nl/lufo/services/wms?",
       layers : "actueel_zomer",
@@ -58,14 +58,14 @@ var config = {
       type: "WMS",
       label: "Meldingen",
       visible:true
-    },*/
+    },
 	  {
       url: "https://geodata.nationaalgeoregister.nl/nwbwegen/wms",
       layers: ["hectopunten"],
       type: "WMS",
       label: "hectopunten",
       visible:true
-    }
+    }*/
    
   ],
   tools: [

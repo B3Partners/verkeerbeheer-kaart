@@ -24,8 +24,10 @@ b3p.EditControl = function(options) {
 
     this.geojsonParser = new ol.format.GeoJSON();
     this.currentItem = null;
-    this.buttons = [];
+    this.elements = [];
     this.interaction = null;
+
+    this.createGroupedButton();
 
     var me = this;
     var styleFunction = function(a,b,c){
@@ -37,13 +39,6 @@ b3p.EditControl = function(options) {
             style: styleFunction
         });
     this.featureOverlay.setMap(this.map);
-
-    if(this.mode === "new"){
-        for (var key in this.buttonConfig){
-            var button = this.buttonConfig[key];
-            this.createButton(key, button);
-        }
-    }
 };
 
 ol.inherits(b3p.EditControl, ol.control.Control);
@@ -127,38 +122,6 @@ b3p.EditControl.prototype.addInteraction = function(){
     };
 };
 
-b3p.EditControl.prototype.createButton = function(typeMelding,options){
-    var me = this;
-    var toggle = function(e){
-        e = e || window.event;
-        var button = e.target;
-        var type = button.typeMelding;
-        me.toggle(button, type);
-        e.preventDefault();
-    };
-    var button = document.createElement('button');
-    button.typeMelding = typeMelding;
-    button.id = "editButton" + typeMelding;
-    button.title = "Maak een " + options.label;
-    button.addEventListener('click', toggle, false);
-    button.addEventListener('touchstart', toggle, false);
-
-    var className = "edit" + typeMelding;
-
-    var element = document.createElement('div');
-    element.id = "editElement" + typeMelding;
-    element.className = className +' edit ol-selectable ol-control ' + className +"-inactive" ;
-    element.appendChild(button);
-
-    document.getElementById("map").appendChild(element);
-
-    ol.control.Control.call(this, {
-       element : element 
-    });
-
-    this.buttons.push(button);
-};
-
 b3p.EditControl.prototype.removeInteraction = function(){
     this.map.removeInteraction(this.modify);
     this.map.removeInteraction(this.draw);
@@ -195,20 +158,6 @@ b3p.EditControl.prototype.getLink = function(result){
     return content;
 };
 
-b3p.EditControl.prototype.toggleStyle = function(button,active) {
-    var element = button.parentElement;
-    var parentClasses = element.className;
-    
-    var editElement = "edit" + button.typeMelding;
-    var activeClass = editElement + "-active";
-    var inactiveClass = editElement + "-inactive";
-    if(active){
-        element.className = element.className.split(inactiveClass).join(activeClass);
-    }else{
-        element.className = element.className.split(activeClass).join(inactiveClass);
-    }
-};
-
 b3p.EditControl.prototype.replaceId = function(id, link){
     var newLink = link.replace("[meldingid]",id);
     return newLink;
@@ -227,29 +176,30 @@ b3p.EditControl.prototype.getStyle = function(a,b,me){
 
 /* Event handlers */
 
-b3p.EditControl.prototype.toggle = function(button, type) {
+b3p.EditControl.prototype.toggle = function(el, type) {
     if(this.features){
         this.popup.setPosition()
         this.features.clear();
     }
-    var element = button.parentElement;
+    var element = el.localName === "div" ? el : el.parentElement;
     var parentClasses = element.className;
     
-    var active = parentClasses.indexOf("-inactive") !== -1;
+    var active = parentClasses.indexOf("inactive") !== -1;
     if(active){
         this.type = type;
         this.addInteraction();
-        for( var b in this.buttons){
-            var but = this.buttons[b];
-            if(b.id !== button.id){
-                this.toggleStyle(but, false);
+        for( var elId in this.elements){
+            var elem = this.elements[elId];
+            if(elem.id !== element.id){
+                this.toggleStyle(elem, false);
             }
         }
     }else{
         this.type = null;
         this.removeInteraction();
     }
-    this.toggleStyle(button, active);
+    this.toggleStyle(element, active);
+    this.hidePanel();
 };
 
 b3p.EditControl.prototype.featureModified = function(evt){
@@ -266,4 +216,154 @@ b3p.EditControl.prototype.featureDrawn = function(evt){
     var content = this.getPopupText();
     this.popup.setInnerHTML (content);
     this.popup.setPosition(coords);
+};
+
+/** UI functions */
+
+b3p.EditControl.prototype.createGroupedButton = function(){
+    var options = {};
+     var tipLabel = options.tipLabel ?
+      options.tipLabel : 'Legend';
+
+    this.mapListeners = [];
+
+    this.hiddenClassName = 'ol-unselectable ol-control edit-group';
+    if (ol.control.LayerSwitcher.isTouchDevice_()) {
+        this.hiddenClassName += ' touch';
+    }
+    this.shownClassName = this.hiddenClassName + ' shown';
+
+    this.element = document.createElement('div');
+    this.element.className = this.hiddenClassName;
+
+    var button = document.createElement('button');
+    button.setAttribute('title', tipLabel);
+    button.innerHTML = "M";
+    button.className = 'editgroup_main_button';
+    this.element.appendChild(button);
+
+    this.panel = document.createElement('div');
+    this.panel.className = 'panel';
+    this.element.appendChild(this.panel);
+    ol.control.LayerSwitcher.enableTouchScroll_(this.panel);
+
+    var this_ = this;
+
+    button.onmouseover = function(e) {
+        this_.showPanel();
+    };
+
+    button.onclick = function(e) {
+        e = e || window.event;
+        this_.showPanel();
+        e.preventDefault();
+    };
+
+    this.panel.onmouseout = function(e) {
+        e = e || window.event;
+        if (!this_.panel.contains(e.toElement || e.relatedTarget)) {
+            this_.hidePanel();
+        }
+    };
+    document.getElementById("map").appendChild(this.element);
+};
+
+
+/**
+ * Show the layer panel.
+ */
+b3p.EditControl.prototype.showPanel = function() {
+    if (this.element.className != this.shownClassName) {
+        this.element.className = this.shownClassName;
+        this.renderPanel();
+    }
+};
+
+/**
+ * Hide the layer panel.
+ */
+b3p.EditControl.prototype.hidePanel = function() {
+    if (this.element.className != this.hiddenClassName) {
+        this.element.className = this.hiddenClassName;
+    }
+};
+
+/**
+ * Re-draw the layer panel to represent the current state of the layers.
+ */
+b3p.EditControl.prototype.renderPanel = function() {
+    while(this.panel.firstChild) {
+        this.panel.removeChild(this.panel.firstChild);
+    }
+
+    var ul = document.createElement('ul');
+    ul.className = "edit-list";
+    this.panel.appendChild(ul);
+    this.renderButtons_(ul);
+
+};
+
+b3p.EditControl.prototype.renderButtons_ = function(ul){
+  if(this.mode === "new"){
+        for (var key in this.buttonConfig){
+            var button = this.buttonConfig[key];
+            this.createButton(key, button, ul);
+        }
+    }
+};
+
+b3p.EditControl.prototype.createButton = function(key, options, ul){
+    var me = this;
+    var toggle = function(e){
+        e = e || window.event;
+        var button = e.target;
+        var type = button.typeMelding;
+        me.toggle(button, type);
+        e.preventDefault();
+    };
+    var button = document.createElement('button');
+    button.typeMelding = key;
+    button.id = "editButton" + key;
+    button.title = "Maak een " + options.label;
+    button.style["background-image"] = "url('images/icon-" + key + ".png')"
+    var className = "edit" + key;
+    var element = document.createElement('div');
+    element.id = "edit_button" + key;
+    element.className = className +' edit ol-selectable ol-control ';
+    if(this.type == key){
+        element.className += "active";
+    }else{
+        element.className += "inactive";
+    }      
+
+    element.addEventListener('click', toggle, false);
+    element.typeMelding = key;
+    element.addEventListener('touchstart', toggle, false);
+
+    this.elements.push(element);
+
+    var label = document.createElement('label');
+    label.innerHTML = options.label;
+    label.typeMelding = key;
+
+    element.appendChild(button);
+    element.appendChild(label);
+
+    var li = document.createElement('li');
+    li.appendChild(element);
+    ul.appendChild(li);
+};
+
+b3p.EditControl.prototype.toggleStyle = function(button,active) {
+    var element = button.localName === "div" ? button : button.parentElement;
+    var parentClasses = element.className;
+    
+    var editElement = "edit" + button.typeMelding;
+    var activeClass =  " active";
+    var inactiveClass = " inactive";
+    if(active){
+        element.className = element.className.split(inactiveClass).join(activeClass);
+    }else{
+        element.className = element.className.split(activeClass).join(inactiveClass);
+    }
 };

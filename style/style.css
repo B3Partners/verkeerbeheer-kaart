@@ -100,53 +100,82 @@ html, body, #map {
 
 .edit{
     top: 10px;
+    position: relative !important;
+    height: 50px;
 }
 
 .edit button{
     background-size: contain;
     background-repeat: no-repeat;
     border: none;
+    float: left;
 }
 
-.edit1 {
-    left: 110px;
-}
-
-.edit1-active button{
-    background-image: url('../images/icon-1.png');
-}
-
-.edit1-inactive button{
-    background-image: url('../images/icon-1.png');
-}
-
-.edit2 {
-    left: 150px;
-}
-.edit2-active button{
-    background-image: url('../images/icon-2.png');
-}
-.edit2-inactive button{
-    background-image: url('../images/icon-2.png');
-}
-
-.edit3 {
-    left: 190px;
-}
-.edit3-active button{
-    background-image: url('../images/icon-3.png');
-}
-.edit3-inactive button{
-    background-image: url('../images/icon-3.png');
+.edit label{
+    float:left;
 }
 
 
-.edit6 {
-    left: 230px;
+/* Edit group */
+
+
+.edit-group {
+    top: 0.5em;
+    left: 4.5em;
+    text-align: left;
 }
-.edit6-active button{
-    background-image: url('../images/icon-6.png');
+
+.editgroup_main_button  {
+    float: right;
+    width: 38px;
+    height: 38px;
+    background-repeat: no-repeat;
+    background-position: 2px;
+    background-color: rgba(0,60,136,.7;);
+    border: none;
 }
-.edit6-inactive button{
-    background-image: url('../images/icon-6.png');
+
+.edit-group .panel {
+    padding: 0 1em 0 0;
+    position: relative;
+    margin: 0;
+    border: 4px solid #eee;
+    border-radius: 4px;
+    background-color: rgba(0,60,136,.5);
+    color: white;
+    display: none;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.edit-group.shown .panel {
+    display: block;
+    height:100%;
+}
+
+.edit-group.shown > button {
+    display: none;
+}
+
+.edit-group button:focus, .layer-switcher button:hover {
+    background-color: rgba(0,60,136,.7);
+}
+
+.edit label{
+    color: red;
+}
+
+.edit-list{
+    list-style-type: none;
+    
+    padding-left: 10px;
+
+}
+
+.active{
+    background-color: rgba(255,255,255,.6) !important;
+}
+
+.inactive{
+    background-color: rgba(255,255,255,.4) !important;
 }
