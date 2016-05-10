@@ -27,8 +27,9 @@ b3p.EditControl = function(options) {
     this.elements = [];
     this.interaction = null;
 
-    this.createGroupedButton();
-
+    if(this.mode === "new"){
+        this.createGroupedButton();
+    }
     var me = this;
     var styleFunction = function(a,b,c){
         return me.getStyle(a,b,me);
