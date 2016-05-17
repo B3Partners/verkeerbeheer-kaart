@@ -131,7 +131,7 @@ b3p.EditControl.prototype.removeInteraction = function(){
 b3p.EditControl.prototype.getPopupText = function(){
     var newFeat = {properties : {}};
     var content = '<span class="result-block">';
-    content += '<span class="result-title">Nieuwe ' + this.buttonConfig[this.type].label + ' maken </span>';
+    content += '<span class="result-title">Nieuwe ' + this.buttonConfig[this.type] + ' maken </span>';
     newFeat.properties [this.idProperty] = 0;
     this.activeFeature = newFeat;
     content += this.getLink(newFeat);
@@ -325,7 +325,7 @@ b3p.EditControl.prototype.createButton = function(key, options, ul){
     var button = document.createElement('button');
     button.typeMelding = key;
     button.id = "editButton" + key;
-    button.title = "Maak een " + options.label;
+    button.title = "Maak een " + options;
     button.style["background-image"] = "url('images/icon-" + key + ".png')"
     var className = "edit" + key;
     var element = document.createElement('div');
@@ -344,7 +344,7 @@ b3p.EditControl.prototype.createButton = function(key, options, ul){
     this.elements.push(element);
 
     var label = document.createElement('label');
-    label.innerHTML = options.label;
+    label.innerHTML = options;
     label.typeMelding = key;
 
     element.appendChild(button);

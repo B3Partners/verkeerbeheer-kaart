@@ -121,6 +121,16 @@ function vbmap(){
         }
      },
 
+    this.setEditTools = function(tools){
+        var editConfig = this.config.getFeature;
+        editConfig.map = this.map;
+        editConfig.popup = this.popup;
+        editConfig.mode = this.mode;
+        editConfig.buttonConfig = tools;
+
+        this.edit = new b3p.EditControl(editConfig);
+    },
+
      this.resetAllFilters = function(){
         var layers = this.thematicLayers.getLayers().getArray();
         for (var i = 0 ; i < layers.length ;i++){
@@ -349,16 +359,6 @@ function vbmap(){
 
         this.popup = new b3p.Popup({map:this.map});
 
-
-
-        var editConfig = this.config.getFeature;
-        editConfig.map = this.map;
-        editConfig.popup = this.popup;
-        editConfig.mode = this.mode;
-        editConfig.buttonConfig = this.config.edit;
-
-        this.edit = new b3p.EditControl(editConfig);
-       // this.map.addControl(this.edit);
 
         if(this.mode === "view" || this.mode === "edit"){
             var getfeatureconfig = this.config.getFeature;

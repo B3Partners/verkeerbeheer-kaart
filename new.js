@@ -14,20 +14,16 @@ var config = {
   },
   edit:{
         1 :{ 
-          label :  "calamiteit",
-          button: "radio_rood.png"
+          label :  "calamiteit"
           },
 		2 :{ 
-          label :   "verkeerskundige melding",
-          button: "radio_groen.png"
+          label :   "verkeerskundige melding"
         },
         3 :{ 
-          label :   "schouw",
-          button: "radio_blauw.png"
+          label :   "schouw"
           },
 		6 :{ 
-          label :   "WIS",
-          button: "radio_groen.png"
+          label :   "WIS"
         }
   },
   baseLayers:[
