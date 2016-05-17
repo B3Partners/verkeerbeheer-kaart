@@ -48,7 +48,7 @@ function vbmap(){
      */
     this.openlink = function(){
         var url = this.edit.generateURL();
-        window.open(url, '_blank');
+        window.open(url, '_same');
     },
 
     this.useGPS = function(){
@@ -75,13 +75,30 @@ function vbmap(){
 	 */
 	 
 	 this.zoomToExtent = function(minx, miny, maxx, maxy){
-		var extent = [minx, miny, maxx, maxy];
-		this.map.getView().fit(extent, this.map.getSize());
+        if(minx !== null && miny !== null && maxx !== null && maxy !== null){
+    		var extent = [minx, miny, maxx, maxy];
+    		this.map.getView().fit(extent, this.map.getSize());
+        }
 	 },
 
+     /**
+      * highlight
+      * zooms to the given extent and does getfeatureinfo on the minx,miny
+      */
      this.highlight = function(minx, miny, maxx, maxy){
-        this.zoomToExtent(minx, miny, maxx, maxy);
-        this.getFeature.onMapClicked({coordinate: [minx, miny]});
+        if(minx !== null && miny !== null && maxx !== null && maxy !== null){
+            this.zoomToExtent(minx, miny, maxx, maxy);
+            this.getFeature.onMapClicked({coordinate: [minx, miny]});
+        }
+     },
+
+     /**
+      * getExtent
+      * Gets the current extent of the map
+      */
+     this.getExtent = function (){
+        var extent = this.map.getView().calculateExtent(this.map.getSize());
+        return extent.join(",");
      },
 
     /*

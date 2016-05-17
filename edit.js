@@ -4,7 +4,7 @@ var config = {
   map_id : "map",
   initial_zoom: 9, // "zoomfactor van de kaart bij opstart",
   getFeature :{
-      tolerance: 8,
+      tolerance: 10,
       createLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=0", // http://<server>.nl/<path>
       viewLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]", // http://<server>.nl/<path>/[meldingid]
       editLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]", // http://<server>.nl/<path>/[meldingid]
