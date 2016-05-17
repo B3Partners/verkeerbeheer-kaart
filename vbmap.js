@@ -79,6 +79,11 @@ function vbmap(){
 		this.map.getView().fit(extent, this.map.getSize());
 	 },
 
+     this.highlight = function(minx, miny, maxx, maxy){
+        this.zoomToExtent(minx, miny, maxx, maxy);
+        this.getFeature.onMapClicked({coordinate: [minx, miny]});
+     },
+
     /*
      * getLocation
      * Function to retrieve the location of the device.
@@ -122,13 +127,7 @@ function vbmap(){
      },
 
     this.setEditTools = function(tools){
-        var editConfig = this.config.getFeature;
-        editConfig.map = this.map;
-        editConfig.popup = this.popup;
-        editConfig.mode = this.mode;
-        editConfig.buttonConfig = tools;
-
-        this.edit = new b3p.EditControl(editConfig);
+        this.edit.buttonConfig = tools;
     },
 
      this.resetAllFilters = function(){
@@ -359,6 +358,12 @@ function vbmap(){
 
         this.popup = new b3p.Popup({map:this.map});
 
+        var editConfig = this.config.getFeature;
+        editConfig.map = this.map;
+        editConfig.popup = this.popup;
+        editConfig.mode = this.mode;
+
+        this.edit = new b3p.EditControl(editConfig);
 
         if(this.mode === "view" || this.mode === "edit"){
             var getfeatureconfig = this.config.getFeature;
