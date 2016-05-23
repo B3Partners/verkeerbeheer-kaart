@@ -48,7 +48,7 @@ function vbmap(){
      */
     this.openlink = function(){
         var url = this.edit.generateURL();
-        window.open(url, '_same');
+        window.open(url, '_parent');
     },
 
     this.useGPS = function(){

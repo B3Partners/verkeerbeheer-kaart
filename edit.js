@@ -55,6 +55,13 @@ var config = {
   ],
  thematicLayers:[
     {
+      url: "https://geodata.nationaalgeoregister.nl/tiles/service/wmts/bgtachtergrond?request=GetCapabilities",
+      layer : "bgtstandaard",
+      type: "WMTS",
+      label : "BGT",
+      visible: true
+    },
+    {
       url: "http://mapserver.verkeersbeheer.nl/cgi-bin/mapserv.exe?map=c:\\maps\\verkeersbeheer.map",
       layers: ["meldingenFilter"],
       type: "WMS",

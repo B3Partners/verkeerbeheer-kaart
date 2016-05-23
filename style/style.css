@@ -115,6 +115,10 @@ html, body, #map {
     float:left;
 }
 
+.panel{
+    font-family: Verdana, Geneva, sans-serif;
+    font-size:11px;
+}
 
 /* Edit group */
 
