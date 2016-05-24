@@ -20,7 +20,8 @@
   * It's responsibilities are the creation of the map and handling the userinteraction with the map.
   */
 
-function vbmap(){
+window.b3p = window.b3p || {};
+b3p.Vbmap = function(){
     this.map = null,
     this.config = null,
     this.baseLayers = null,
@@ -29,19 +30,52 @@ function vbmap(){
     this.getFeature = null,
     this.mode = null,
     this.popup = null,
+    this.scripts = null,
+    this.ready = false,
+    this.debugScripts = [
+        "//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js",
+        "libs/ol-debug.js",
+        "libs/ol3-layerswitcher.js",
+        "libs/ol3-gps.js",
+        "libs/ol3-edit.js",
+        "libs/ol3-getfeature.js",
+        "libs/ol3-popup.js"
+    ],
+    this.minifiedScripts =[
+        "libs/target.min.js"
+    ],
 
     this.init = function(config){
+        this.ready = false;
         this.config = config;
         this.mode = config.mode;
+        if(this.getQueryStringValue("debug")== "true"){
+            this.scripts = this.debugScripts;
+        }else{
+            this.scripts = this.minifiedScripts;
+        }
+
+        this.loadScripts();
+        window.b3p.vbmap = this;
+    },
+
+    this.initComponent = function(){
         this.initLayers();
         this.initTools(this.config.tools);
-        window.vbmap = this;
+        this.ready = true;
     },
 
 
-
     /************************** API functions *********************/
-
+    
+    this.resetConfig = function (config){
+        var node = document.getElementById(this.config.map_id);
+        while (node.hasChildNodes()) {
+            node.removeChild(node.lastChild);
+        }
+        this.init(config);
+    },
     /**
      * openLink
      * Function to save the modifications/new feature to the database. Called when clicking on the link in the popup.
@@ -429,6 +463,44 @@ function vbmap(){
             }),
             controls: []
         });
+    },
+
+    /**
+     * Load the scripts
+     */
+    this.loadScripts = function(){
+        if(this.scripts.length > 0 ){
+            var script = this.scripts[0];
+            this.scripts.splice(0,1);
+            this.loadScript(script, this.loadScripts);
+        }else{
+            this.initComponent();
+        }
+    },
+   
+    this.getQueryStringValue = function (key) {  
+      return unescape(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + escape(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
+    },
+
+    this.loadScript = function (url, callback){
+        // Adding the script tag to the head as suggested before
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+
+        // Then bind the event to the callback function.
+        // There are several events for cross browser compatibility.
+        var me = this;
+        script.onreadystatechange = function(){
+            callback.apply(me);
+        };
+        script.onload = function(){
+            callback.apply(me);
+        };
+
+        // Fire the loading
+        head.appendChild(script);
     }
 }
 
@@ -437,4 +509,3 @@ function initOptions(me,options){
         me[key] = options[key];
     }
 }
-var b3p = {};

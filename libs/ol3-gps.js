@@ -38,6 +38,8 @@ b3p.GPSControl = function(options) {
 	});
 
 	this.tracking = options.tracking ? options.tracking : false;
+	this.mustZoom = false;
+
 	if(this.tracking){
 		this.toggleStyle();
 	}
@@ -67,7 +69,11 @@ b3p.GPSControl = function(options) {
 		if(me.geolocation.getTracking() && coordinates){
 			me.positionFeature.setGeometry( new ol.geom.Point(coordinates));
 			me.map.getView().setCenter(coordinates);
-			me.map.getView().setZoom(12);
+			console.log("mustzoom:",me.mustZoom);
+			if(me.mustZoom){
+				me.map.getView().setZoom(12);
+				me.mustZoom = false;
+			}
 		}
 	});
 
@@ -102,6 +108,8 @@ b3p.GPSControl.prototype.toggle = function() {
 	if(this.tracking){
 		this.vectorLayer.getSource().clear();
 	}else{
+		this.mustZoom = true;
+		console.log("mustzoom:",this.mustZoom);
 		if(this.vectorLayer.getSource().getFeatures().length === 0){
 			this.vectorLayer.getSource().addFeature(this.positionFeature);
 		}
