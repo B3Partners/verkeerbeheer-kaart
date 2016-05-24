@@ -35,15 +35,15 @@ b3p.Vbmap = function(){
     this.debugScripts = [
         "//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js",
         "//cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js",
-        "libs/ol-debug.js",
-        "libs/ol3-layerswitcher.js",
-        "libs/ol3-gps.js",
-        "libs/ol3-edit.js",
-        "libs/ol3-getfeature.js",
-        "libs/ol3-popup.js"
+        "map/libs/ol-debug.js",
+        "map/libs/ol3-layerswitcher.js",
+        "map/libs/ol3-gps.js",
+        "map/libs/ol3-edit.js",
+        "map/libs/ol3-getfeature.js",
+        "map/libs/ol3-popup.js"
     ],
     this.minifiedScripts =[
-        "libs/target.min.js"
+        "map/libs/target.min.js"
     ],
 
     this.init = function(config){
@@ -92,28 +92,28 @@ b3p.Vbmap = function(){
         };
         this.getLocation(f);
     },
-	
-	/**
-	 * zoomTo
-	 * Function to zoom/move to a coordinate.
-	 */
-	 
-	 this.zoomTo = function(x, y){
-		this.map.getView().setCenter([x,y]);
-		this.map.getView().setZoom(18);
-	 },
-	 
-	/**
-	 * zoomTo
-	 * Function to zoom/move to a coordinate.
-	 */
-	 
-	 this.zoomToExtent = function(minx, miny, maxx, maxy){
+    
+    /**
+     * zoomTo
+     * Function to zoom/move to a coordinate.
+     */
+     
+     this.zoomTo = function(x, y){
+        this.map.getView().setCenter([x,y]);
+        this.map.getView().setZoom(18);
+     },
+     
+    /**
+     * zoomTo
+     * Function to zoom/move to a coordinate.
+     */
+     
+     this.zoomToExtent = function(minx, miny, maxx, maxy){
         if(minx !== null && miny !== null && maxx !== null && maxy !== null){
-    		var extent = [minx, miny, maxx, maxy];
-    		this.map.getView().fit(extent, this.map.getSize());
+            var extent = [minx, miny, maxx, maxy];
+            this.map.getView().fit(extent, this.map.getSize());
         }
-	 },
+     },
 
      /**
       * highlight
@@ -162,23 +162,39 @@ b3p.Vbmap = function(){
             };
      */
      this.setFilter = function(filter){
-        var layers = this.thematicLayers.getLayers().getArray();
-        for (var i = 0 ; i < layers.length ;i++){
-            var layer = layers[0];
-            this.resetFilter(layer);
-            for (var key in filter){
-                var f = {};
-                f[key] = Array.isArray(filter[key]) ? filter[key].join(",") : filter[key];
-                f[key + "_active"] = true;
-                if(f[key] !== ""){
-                    layer.getSource().updateParams(f);
+        if(this.ready){
+            var layers = this.thematicLayers.getLayers().getArray();
+            for (var i = 0 ; i < layers.length ;i++){
+                var layer = layers[0];
+                this.resetFilter(layer);
+                for (var key in filter){
+                    var f = {};
+                    f[key] = Array.isArray(filter[key]) ? filter[key].join(",") : filter[key];
+                    f[key + "_active"] = true;
+                    if(f[key] !== ""){
+                        layer.getSource().updateParams(f);
+                    }
                 }
             }
+        }else{
+            var me = this;
+            me.filter = filter;
+            setTimeout(function(filter){
+                me.setFilter(me.filter);
+            }, 1000);
         }
      },
 
     this.setEditTools = function(tools){
-        this.edit.buttonConfig = tools;
+        if(this.ready){
+            this.edit.buttonConfig = tools;
+        }else{
+            var me = this;
+            me.tools = tools;
+            setTimeout(function(tools){
+                me.setEditTools(me.tools);
+            }, 1000);
+        }
     },
 
      this.resetAllFilters = function(){
@@ -334,9 +350,9 @@ b3p.Vbmap = function(){
         var layer = new ol.layer.Tile({
             type: base ? "base" : null,
             title: layerConfig.label,
-			opacity: layerConfig.opacity ? layerConfig.opacity : 1,
-			maxResolution: layerConfig.maxResolution,
-			minResolution: layerConfig.minResolution,
+            opacity: layerConfig.opacity ? layerConfig.opacity : 1,
+            maxResolution: layerConfig.maxResolution,
+            minResolution: layerConfig.minResolution,
             visible: layerConfig.visible ? layerConfig.visible : false,
             source: new ol.source.TileWMS({
                 url: layerConfig.url,
@@ -349,9 +365,9 @@ b3p.Vbmap = function(){
         /*var layer = new ol.layer.Image({
             type: base ? "base" : null,
             title: layerConfig.label,
-			opacity: layerConfig.opacity ? layerConfig.opacity : 1,
-			maxResolution: layerConfig.maxResolution,
-			minResolution: layerConfig.minResolution,
+            opacity: layerConfig.opacity ? layerConfig.opacity : 1,
+            maxResolution: layerConfig.maxResolution,
+            minResolution: layerConfig.minResolution,
             visible: layerConfig.visible ? layerConfig.visible : false,
             source: new ol.source.ImageWMS({
                 url: layerConfig.url,
