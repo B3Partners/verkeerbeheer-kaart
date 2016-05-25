@@ -61,6 +61,14 @@ var config = {
       type: "WMS",
       label: "hectopunten",
       visible:true
+    },
+    {
+      url: "http://mapserver.verkeersbeheer.nl/cgi-bin/mapserv.exe?map=c:\\maps\\verkeersbeheer.map",
+      layers: ["meldingenFilter"],
+      type: "WMS",
+      label: "Meldingen",
+      visible:false,
+    maxResolution: 14
     }
    
   ],

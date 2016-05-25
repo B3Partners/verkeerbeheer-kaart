@@ -5,17 +5,19 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Verkeerbeheer testpage</title>
-	<link rel="stylesheet" type="text/css" href="style/style.css">
+	<link rel="stylesheet" type="text/css" href="style/style.min.css">
 	
 	<script src="new.js"></script>
-	<script src="libs/target.min.js"></script>
+	<script src="vbmap.js"></script>
 </head>
 <body>
-	<div id="map"></div>
+	<div style="width:800px;height:600px;clear;both;">
+		<div id="map"></div>
+	</div>
 	<script type="text/javascript">
-		var vbmap = new vbmap();
+		var vbmap = new b3p.Vbmap();
 		vbmap.init(config);
-		var edittools = {1: "WIS", 99: "Pietje"};
+		var edittools = {1: "WIS", 99: "Pietje", 2:"aap"};
 		vbmap.setEditTools(edittools);
 	</script>
 </body>

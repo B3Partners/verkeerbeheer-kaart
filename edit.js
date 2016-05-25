@@ -77,6 +77,7 @@ var config = {
       visible:true,
 	  opacity: 0.6
     }
+    
   ],
   tools: [
     {tool_id: "MousePosition"},
