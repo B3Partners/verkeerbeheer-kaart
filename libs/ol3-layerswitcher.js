@@ -195,8 +195,6 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
         this.renderLayers_(lyr, ul);
 
     } else {
-
-        li.className = 'layer';
         var input = document.createElement('input');
         if (lyr.get('type') === 'base') {
             input.name = 'base';

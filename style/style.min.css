@@ -3,6 +3,8 @@ html, body, #map {
     margin: 0;
     height: 100%;
     width: 100%;
+font-size: 16px;
+    position: relative;
 }
 
 /*GPS*/
