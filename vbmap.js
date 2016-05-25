@@ -360,7 +360,7 @@ b3p.Vbmap = function(){
     },
 
     this.initWMSLayer = function (layerConfig, base){
-        var layer = new ol.layer.Tile({
+      /*  var layer = new ol.layer.Tile({
             type: base ? "base" : null,
             title: layerConfig.label,
             opacity: layerConfig.opacity ? layerConfig.opacity : 1,
@@ -376,8 +376,8 @@ b3p.Vbmap = function(){
                     query_layers: layerConfig.layers
                 }
             })
-        });
-        /*var layer = new ol.layer.Image({
+        });*/
+        var layer = new ol.layer.Image({
             type: base ? "base" : null,
             title: layerConfig.label,
             opacity: layerConfig.opacity ? layerConfig.opacity : 1,
@@ -391,7 +391,7 @@ b3p.Vbmap = function(){
                     query_layers: layerConfig.layers
                 }
             })
-        });*/
+        });
         return layer;
     },
 
