@@ -149,7 +149,6 @@ html, body, #map {
     color: white;
     display: none;
     max-height: 100%;
-    overflow-y: auto;
 }
 
 .edit-group.shown .panel {

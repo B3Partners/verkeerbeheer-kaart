@@ -110,8 +110,20 @@ b3p.Vbmap = function(){
      
      this.zoomToExtent = function(minx, miny, maxx, maxy){
         if(minx !== null && miny !== null && maxx !== null && maxy !== null){
-            var extent = [minx, miny, maxx, maxy];
-            this.map.getView().fit(extent, this.map.getSize());
+            if(this.ready){
+                var extent = [minx, miny, maxx, maxy];
+                this.map.getView().fit(extent, this.map.getSize());
+            }else{
+                var me = this;
+                me.extent = extent;
+                me.minx = minx;
+                me.miny = miny;
+                me.maxx = maxx;
+                me.maxy = maxy;
+                setTimeout(function(minx, miny, maxx, maxy){
+                    me.zoomToExtent(me.minx,me.miny,me.maxx,me.maxy);
+                }, 500);
+            }
         }
      },
 
@@ -181,7 +193,7 @@ b3p.Vbmap = function(){
             me.filter = filter;
             setTimeout(function(filter){
                 me.setFilter(me.filter);
-            }, 1000);
+            }, 400);
         }
      },
 
@@ -268,11 +280,11 @@ b3p.Vbmap = function(){
         var layers = this.config.thematicLayers;
         for(var i= 0 ; i < layers.length; i++){
             var layer = layers[i];
-            this.initLayer(layer,this.thematicLayers, extentAr, projection, resolutions, matrixIds, false);
+            this.initLayer(layer,this.thematicLayers, extentAr, projection, resolutions, matrixIds, false, i);
         }
     },
 
-    this.initLayer = function (layerConfig, group, extentAr, projection, resolutions, matrixIds, base){
+    this.initLayer = function (layerConfig, group, extentAr, projection, resolutions, matrixIds, base, index){
         var type = layerConfig.type;
         var layer = null;
         switch(type){
@@ -283,7 +295,7 @@ b3p.Vbmap = function(){
                 layer = this.initWMSLayer(layerConfig, base);
                 break;
             case "WMTS":
-                layer = this.initWMTSLayer(layerConfig, extentAr, projection, resolutions, matrixIds, base, group)
+                layer = this.initWMTSLayer(layerConfig, extentAr, projection, resolutions, matrixIds, base, group,index)
                 break;
             default:
                 console.error("Type " + type + " not possible to instantiate as a layer");
@@ -313,9 +325,10 @@ b3p.Vbmap = function(){
         return tms;
     },
    
-    this.initWMTSLayer = function (layerConfig, extentAr, projection, resolutions, matrixIds, base, group){
+    this.initWMTSLayer = function (layerConfig, extentAr, projection, resolutions, matrixIds, base, group, index){
         var me = this;
         me.projection = projection;
+        me.index = index;
         $.ajax(layerConfig.url).then(function(response) {
             var result = me.wmtsParser.read(response);
             var config = {
@@ -342,7 +355,7 @@ b3p.Vbmap = function(){
                 source:source,
                 visible: layerConfig.visible !== undefined ? layerConfig.visible : false
             });
-            group.getLayers().push(layer);
+            group.getLayers().insertAt(me.index,layer);
         });
     },
 
@@ -358,6 +371,8 @@ b3p.Vbmap = function(){
                 url: layerConfig.url,
                 params: {
                     layers: layerConfig.layers,
+                    width: 512,
+                    height: 512,
                     query_layers: layerConfig.layers
                 }
             })
@@ -488,6 +503,9 @@ b3p.Vbmap = function(){
         if(this.scripts.length > 0 ){
             var script = this.scripts[0];
             this.scripts.splice(0,1);
+            if(script.indexOf("map") !== -1 && this.getQueryStringValue("local")== "true"){
+                script = script.substring(4);
+            }
             this.loadScript(script, this.loadScripts);
         }else{
             this.initComponent();
