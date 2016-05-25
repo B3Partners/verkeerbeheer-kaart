@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 b3p.GetFeature = function(options) {
-	options.maxResults = options.maxResults ? options.maxResults : 10;
+	options.maxResults = options.maxResults ? options.maxResults : 5;
 	options.tolerance = options.tolerance ? options.tolerance : 4;
 	initOptions(this,options);
 
@@ -29,7 +29,7 @@ b3p.GetFeature.prototype.onMapClicked = function(evt) {
 	var coordinate = evt.coordinate;
 	//this.popup.setPosition(coordinate);
 	var extent = this.getBBOX(coordinate);
-	var url = this.layer.getSource().getUrls()[0] + '&service=WFS&' + 'version=1.1.0&request=GetFeature&typename=' + this.layer.getSource().getParams().layers.join(",") +
+	var url = this.layer.getSource().getUrl() + '&service=WFS&' + 'version=1.1.0&request=GetFeature&typename=' + this.layer.getSource().getParams().layers.join(",") +
 		'&srsName=EPSG:28992&bbox=' + extent + '';
 		//&outputFormat=geojson
 	var me = this;
@@ -73,6 +73,9 @@ b3p.GetFeature.prototype.handleResults = function(results) {
 	var content = '';
 	for(var i = 0 ; i < numResults ; i++){
 		var result = results[i];
+		if(i > 0){
+			content += "<hr>";
+		}
 		content += this.handleResult(result);
 	}
 	this.popup.setInnerHTML(content);
@@ -81,7 +84,7 @@ b3p.GetFeature.prototype.handleResults = function(results) {
 
 b3p.GetFeature.prototype.handleResult = function(result) {
 	var content = '<span class="result-block">';
-	content += '<span class="result-title">Melding</span>';
+	content += '<span class="result-title">' + result.getProperties()["zType"]+'</span>';
 	content += '<br/>';
 	content += '<span class="result-content"><span class="result-head">Weg</span><span class="result-value"> ' + result.getProperties()["zWeg"] +"</span></span>";
 	content += '<span class="result-content"><span class="result-head">Datum</span><span class="result-value"> ' + result.getProperties()["zDatum"] +"</span></span>";

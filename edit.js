@@ -10,7 +10,8 @@ var config = {
       editLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]", // http://<server>.nl/<path>/[meldingid]
       idProperty : "zId",
       labelProperty : "zWeg",
-      typeProperty: "zTypeRef"
+      typeProperty: "zTypeRef",
+      maxResults:3
   },
   edit:{
         1 :{ 

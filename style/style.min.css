@@ -148,8 +148,6 @@ html, body, #map {
     background-color: rgba(0,60,136,.5);
     color: white;
     display: none;
-    max-height: 100%;
-    overflow-y: auto;
 }
 
 .edit-group.shown .panel {
@@ -166,14 +164,12 @@ html, body, #map {
 }
 
 .edit label{
-    color: red;
+    color: white;
 }
 
 .edit-list{
     list-style-type: none;
-    
     padding-left: 10px;
-
 }
 
 .active{

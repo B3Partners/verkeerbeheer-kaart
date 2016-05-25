@@ -122,7 +122,7 @@ b3p.Vbmap = function(){
                 me.maxy = maxy;
                 setTimeout(function(minx, miny, maxx, maxy){
                     me.zoomToExtent(me.minx,me.miny,me.maxx,me.maxy);
-                }, 500);
+                }, 300);
             }
         }
      },
@@ -193,7 +193,7 @@ b3p.Vbmap = function(){
             me.filter = filter;
             setTimeout(function(filter){
                 me.setFilter(me.filter);
-            }, 400);
+            }, 300);
         }
      },
 
@@ -205,7 +205,7 @@ b3p.Vbmap = function(){
             me.tools = tools;
             setTimeout(function(tools){
                 me.setEditTools(me.tools);
-            }, 1000);
+            }, 300);
         }
     },
 
