@@ -57,7 +57,7 @@ b3p.Vbmap = function(){
         }
 
         this.loadScripts();
-        window.b3p.vbmap = this;
+        window.vbmap = this;
     },
 
     this.initComponent = function(){
