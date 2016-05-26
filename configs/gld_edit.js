@@ -4,13 +4,14 @@ var config = {
   map_id : "map",
   initial_zoom: 9, // "zoomfactor van de kaart bij opstart",
   getFeature :{
-      tolerance: 5,
+      tolerance: 10,
       createLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=0", // http://<server>.nl/<path>
       viewLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]", // http://<server>.nl/<path>/[meldingid]
       editLink : "http://map.verkeersbeheer.nl/default.aspx?page=melding&id=[meldingid]", // http://<server>.nl/<path>/[meldingid]
       idProperty : "zId",
       labelProperty : "zWeg",
-      typeProperty: "zTypeRef"
+      typeProperty: "zTypeRef",
+      maxResults:3
   },
   edit:{
         1 :{ 
@@ -45,17 +46,39 @@ var config = {
       layers : "actueel_zomer",
       type: "WMS",
       label : "Luchtfoto"
-    }
+    }/*,
+    {
+      url: "https://geodata.nationaalgeoregister.nl/tiles/service/wmts/bgtachtergrond?request=GetCapabilities",
+      layer : "top10nlv2",
+      type: "WMTS",
+      label : "BGT"
+    }*/
   ],
  thematicLayers:[
-     {
+    {
+      url: "https://geodata.nationaalgeoregister.nl/tiles/service/wmts/bgtachtergrond?request=GetCapabilities",
+      layer : "bgtstandaard",
+      type: "WMTS",
+      label : "BGT",
+      visible: true
+    },
+    {
       url: "http://mapserver.verkeersbeheer.nl/cgi-bin/mapserv.exe?map=c:\\maps\\verkeersbeheer.map",
-      layers: ["Meldingen"],
+      layers: ["meldingenFilter"],
       type: "WMS",
       label: "Meldingen",
-      visible:true
+      visible:true,
+	  maxResolution: 14
+    },
+	{
+      url: "https://geodata.nationaalgeoregister.nl/nwbwegen/wms",
+      layers: ["hectopunten"],
+      type: "WMS",
+      label: "hectopunten",
+      visible:true,
+	  opacity: 0.6
     }
-
+    
   ],
   tools: [
     {tool_id: "MousePosition"},
