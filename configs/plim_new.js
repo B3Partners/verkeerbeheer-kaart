@@ -33,6 +33,12 @@ var config = {
       type: "TMS",
       visible: true
     },
+    {
+      url: "http://portal.prvlimburg.nl/geoservices/eurostreets_light?",
+      layers : "eurostreets_light",
+      type: "WMS",
+      label : "Topografie"
+    },
    /* {
       url: "https://geodata.nationaalgeoregister.nl/wmts/brtachtergrondkaart?request=GetCapabilities",
       label :"BRT",

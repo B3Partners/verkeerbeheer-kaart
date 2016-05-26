@@ -42,6 +42,12 @@ var config = {
       type: "WMTS"
     },
     {
+      url: "http://portal.prvlimburg.nl/geoservices/eurostreets_light?",
+      layers : "eurostreets_light",
+      type: "WMS",
+      label : "Topografie"
+    },
+    {
       url: "http://webservices.gbo-provincies.nl/lufo/services/wms?",
       layers : "actueel_zomer",
       type: "WMS",
