@@ -133,8 +133,19 @@ b3p.Vbmap = function(){
       */
      this.highlight = function(minx, miny, maxx, maxy){
         if(minx !== null && miny !== null && maxx !== null && maxy !== null){
-            this.zoomToExtent(minx, miny, maxx, maxy);
-            this.getFeature.onMapClicked({coordinate: [minx, miny]});
+            if(this.ready){
+                this.zoomToExtent(minx, miny, maxx, maxy);
+                this.getFeature.onMapClicked({coordinate: [minx, miny]});
+            }else{
+                var me = this;
+                me.minx = minx;
+                me.miny = miny;
+                me.maxx = maxx;
+                me.maxy = maxy;
+                setTimeout(function(minx, miny, maxx, maxy){
+                    me.highlight(me.minx,me.miny,me.maxx,me.maxy);
+                }, 300);
+            }
         }
      },
 

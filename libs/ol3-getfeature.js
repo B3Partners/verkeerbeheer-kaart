@@ -89,9 +89,18 @@ b3p.GetFeature.prototype.handleResult = function(result) {
 	content += '<span class="result-content"><span class="result-head">Weg</span><span class="result-value"> ' + result.getProperties()["zWeg"] +"</span></span>";
 	content += '<span class="result-content"><span class="result-head">Datum</span><span class="result-value"> ' + result.getProperties()["zDatum"] +"</span></span>";
 	content += '<span class="result-content"><span class="result-head">Hectometer</span><span class="result-value"> ' + result.getProperties()["zHmp"] +"</span></span>";
+	content += '<span class="result-content"><span class="result-head">Omschrijving</span><span class="result-value"> ' + this.emptyIfUndefined(result.getProperties()["zOpm"]) +"</span></span>";
 	//content += '<span class="result-content"><span class="result-head">Omschrijving</span><span class="result-value"> ' + result.getProperties()["zWeg"] +"</span></span>";
 	var geojson = this.geojsonformat.writeFeatureObject(result);
 	content += this.edit.getLink(geojson);
 	content += '</span>';
 	return content;
+};
+
+b3p.GetFeature.prototype.emptyIfUndefined = function(value){
+	if(value === undefined){
+		return "";
+	}else{
+		return value;
+	}
 };
