@@ -221,11 +221,17 @@ b3p.Vbmap = function(){
     },
 
      this.resetAllFilters = function(){
-        var layers = this.thematicLayers.getLayers().getArray();
-        for (var i = 0 ; i < layers.length ;i++){
-            this.resetFilter(layers[i]);
+        if(this.ready){            
+            var layers = this.thematicLayers.getLayers().getArray();
+            for (var i = 0 ; i < layers.length ;i++){
+                this.resetFilter(layers[i]);
+            }
+        }else{
+            var me = this;
+            setTimeout(function(){
+                me.resetAllFilters();
+            }, 300);
         }
-
      },
 
      this.resetFilter = function(layer){
