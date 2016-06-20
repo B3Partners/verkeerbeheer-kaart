@@ -63,7 +63,7 @@ var config = {
       visible: true
     },
     {
-      url: "http://mapserver.verkeersbeheer.nl/cgi-bin/mapserv.exe?map=c:\\maps\\verkeersbeheer.map",
+      url: "http://mapserver.verkeersbeheer.nl/cgi-bin/mapserv.exe?map=c:\\maps\\gelderland.map",
       layers: ["meldingenFilter"],
       type: "WMS",
       label: "Meldingen",
