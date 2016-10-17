@@ -11,7 +11,8 @@ var config = {
       idProperty : "zId",
       labelProperty : "zWeg",
       typeProperty: "zTypeRef",
-      maxResults:3
+      maxResults:3,
+      layerIndex: 5
   },
   edit:{
         1 :{ 

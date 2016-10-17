@@ -466,8 +466,9 @@ b3p.Vbmap = function(){
 
         if(this.mode === "view" || this.mode === "edit"){
             var getfeatureconfig = this.config.getFeature;
+            var index = getfeatureconfig.layerIndex ? getfeatureconfig.layerIndex : 0;
             getfeatureconfig.map = this.map;
-            getfeatureconfig.layer = this.thematicLayers.getLayers().getArray()[0];
+            getfeatureconfig.layer = this.thematicLayers.getLayers().getArray()[index];
             getfeatureconfig.mode = this.mode;
             getfeatureconfig.popup = this.popup;
             getfeatureconfig.edit = this.edit;
