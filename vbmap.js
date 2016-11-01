@@ -188,7 +188,9 @@ b3p.Vbmap = function(){
         if(this.ready){
             var layers = this.thematicLayers.getLayers().getArray();
             for (var i = 0 ; i < layers.length ;i++){
-                var layer = layers[0];
+
+                var index = this.config.getFeature.layerIndex ? this.config.getFeature.layerIndex : 0;
+                var layer = layers[index];;
                 this.resetFilter(layer);
                 for (var key in filter){
                     var f = {};
@@ -221,7 +223,7 @@ b3p.Vbmap = function(){
     },
 
      this.resetAllFilters = function(){
-        if(this.ready){            
+		if(this.ready){            
             var layers = this.thematicLayers.getLayers().getArray();
             for (var i = 0 ; i < layers.length ;i++){
                 this.resetFilter(layers[i]);
@@ -466,7 +468,7 @@ b3p.Vbmap = function(){
 
         if(this.mode === "view" || this.mode === "edit"){
             var getfeatureconfig = this.config.getFeature;
-            var index = getfeatureconfig.layerIndex ? getfeatureconfig.layerIndex : 0;
+			var index = getfeatureconfig.layerIndex ? getfeatureconfig.layerIndex - 1 : 0;
             getfeatureconfig.map = this.map;
             getfeatureconfig.layer = this.thematicLayers.getLayers().getArray()[index];
             getfeatureconfig.mode = this.mode;
