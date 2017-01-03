@@ -187,11 +187,10 @@ b3p.Vbmap = function(){
      this.setFilter = function(filter){
         if(this.ready){
             var layers = this.thematicLayers.getLayers().getArray();
-            for (var i = 0 ; i < layers.length ;i++){
-
-                var index = this.config.getFeature.layerIndex ? this.config.getFeature.layerIndex : 0;
-                var layer = layers[index];;
-                this.resetFilter(layer);
+            var index = this.config.getFeature.layerIndex ? this.config.getFeature.layerIndex : 0;
+            var layer = layers[index];
+            this.resetFilter(layer);
+            if(layer.getSource().updateParams !== undefined){
                 for (var key in filter){
                     var f = {};
                     f[key] = Array.isArray(filter[key]) ? filter[key].join(",") : filter[key];
@@ -201,6 +200,7 @@ b3p.Vbmap = function(){
                     }
                 }
             }
+            
         }else{
             var me = this;
             me.filter = filter;
@@ -237,14 +237,22 @@ b3p.Vbmap = function(){
      },
 
      this.resetFilter = function(layer){
-        var params = layer.getSource().getParams();
-        var newParams = {};
-        for(var key in params){
-            if(key !== "layers"){
-                newParams[key]= null;
+        if(this.ready && layer !== undefined && layer.getSource()!== undefined && layer.getSource().getParams !== undefined){        
+            var params = layer.getSource().getParams();
+            var newParams = {};
+            for(var key in params){
+                if(key !== "layers"){
+                    newParams[key]= null;
+                }
             }
+            layer.getSource().updateParams(newParams);
+        }else{
+            var me = this;
+            me.layer;
+            setTimeout(function(){
+                me.resetFilter(me.layer);
+            }, 300);
         }
-        layer.getSource().updateParams(newParams);
      },
 
      this.dummyFilter = function(){
@@ -468,7 +476,7 @@ b3p.Vbmap = function(){
 
         if(this.mode === "view" || this.mode === "edit"){
             var getfeatureconfig = this.config.getFeature;
-			var index = getfeatureconfig.layerIndex ? getfeatureconfig.layerIndex - 1 : 0;
+			var index = getfeatureconfig.layerIndex ? getfeatureconfig.layerIndex : 0;
             getfeatureconfig.map = this.map;
             getfeatureconfig.layer = this.thematicLayers.getLayers().getArray()[index];
             getfeatureconfig.mode = this.mode;
