@@ -84,13 +84,18 @@ b3p.GetFeature.prototype.handleResults = function(results) {
 
 b3p.GetFeature.prototype.handleResult = function(result) {
 	var content = '<span class="result-block">';
-	content += '<span class="result-title">' + result.getProperties()["zType"]+'</span>';
-	content += '<br/>';
-	content += '<span class="result-content"><span class="result-head">Weg</span><span class="result-value"> ' + result.getProperties()["zWeg"] +"</span></span>";
-	content += '<span class="result-content"><span class="result-head">Datum</span><span class="result-value"> ' + result.getProperties()["zDatum"] +"</span></span>";
-	content += '<span class="result-content"><span class="result-head">Hectometer</span><span class="result-value"> ' + result.getProperties()["zHmp"] +"</span></span>";
-	content += '<span class="result-content"><span class="result-head">Omschrijving</span><span class="result-value"> ' + this.emptyIfUndefined(result.getProperties()["zOpm"]) +"</span></span>";
-	//content += '<span class="result-content"><span class="result-head">Omschrijving</span><span class="result-value"> ' + result.getProperties()["zWeg"] +"</span></span>";
+
+	if(result.getProperties()["zPopup"]){
+		content += result.getProperties()["zPopup"];
+	}else{
+		content += '<span class="result-title">' + result.getProperties()["zType"]+'</span>';
+		content += '<br/>';
+		content += '<span class="result-content"><span class="result-head">Weg</span><span class="result-value"> ' + result.getProperties()["zWeg"] +"</span></span>";
+		content += '<span class="result-content"><span class="result-head">Datum</span><span class="result-value"> ' + result.getProperties()["zDatum"] +"</span></span>";
+		content += '<span class="result-content"><span class="result-head">Hectometer</span><span class="result-value"> ' + result.getProperties()["zHmp"] +"</span></span>";
+		content += '<span class="result-content"><span class="result-head">Omschrijving</span><span class="result-value"> ' + this.emptyIfUndefined(result.getProperties()["zOpm"]) +"</span></span>";
+	}
+
 	var geojson = this.geojsonformat.writeFeatureObject(result);
 	content += this.edit.getLink(geojson);
 	content += '</span>';
