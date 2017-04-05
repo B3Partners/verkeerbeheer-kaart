@@ -32,6 +32,7 @@ b3p.Vbmap = function(){
     this.popup = null,
     this.scripts = null,
     this.ready = false,
+    this.layerIndexOffsetByAsyncLayers = 0, //necessary for asynchronously loaded layers (like wmts layers)
     this.debugScripts = [
         "//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js",
         "//cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js",
@@ -186,9 +187,7 @@ b3p.Vbmap = function(){
      */
      this.setFilter = function(filter){
         if(this.ready){
-            var layers = this.thematicLayers.getLayers().getArray();
-            var index = this.config.getFeature.layerIndex ? this.config.getFeature.layerIndex : 0;
-            var layer = layers[index];
+            var layer = this.getMeldingLayer();
             this.resetFilter(layer);
             if(layer.getSource().updateParams !== undefined){
                 for (var key in filter){
@@ -257,8 +256,7 @@ b3p.Vbmap = function(){
 
      this.dummyFilter = function(){
         var filter = {
-            gm_code: ['GM0513'],
-            gm_naam: "Gouda"
+            type: [,1,3]
         };
         this.setFilter(filter);
      },
@@ -338,7 +336,6 @@ b3p.Vbmap = function(){
             extent: extentAr,
             projection: projection,
             tilePixelRatio: layer.tilePixelRatio ? layer.tilePixelRatio : 1,
-            url: layer.url
         });
         var tms = new ol.layer.Tile({
             source: tmsSource,
@@ -383,6 +380,7 @@ b3p.Vbmap = function(){
                 visible: layerConfig.visible !== undefined ? layerConfig.visible : false
             });
             group.getLayers().insertAt(me.index,layer);
+            me.layerIndexOffsetByAsyncLayers ++;
         });
     },
 
@@ -478,7 +476,7 @@ b3p.Vbmap = function(){
             var getfeatureconfig = this.config.getFeature;
 			var index = getfeatureconfig.layerIndex ? getfeatureconfig.layerIndex : 0;
             getfeatureconfig.map = this.map;
-            getfeatureconfig.layer = this.thematicLayers.getLayers().getArray()[index];
+            getfeatureconfig.layer = this.getMeldingLayer();
             getfeatureconfig.mode = this.mode;
             getfeatureconfig.popup = this.popup;
             getfeatureconfig.edit = this.edit;
@@ -563,6 +561,14 @@ b3p.Vbmap = function(){
 
         // Fire the loading
         head.appendChild(script);
+    },
+    this.getMeldingLayer = function(){
+        var layers = this.thematicLayers.getLayers().getArray();
+        var index = this.config.getFeature.layerIndex ? this.config.getFeature.layerIndex : 0;
+        index += this.layerIndexOffsetByAsyncLayers;
+        var layer = layers[index];
+        return layer;
+        
     }
 }
 
