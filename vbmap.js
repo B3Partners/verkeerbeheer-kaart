@@ -380,7 +380,9 @@ b3p.Vbmap = function(){
                 visible: layerConfig.visible !== undefined ? layerConfig.visible : false
             });
             group.getLayers().insertAt(me.index,layer);
-            me.layerIndexOffsetByAsyncLayers ++;
+            if(group.getProperties().title === "Themalagen"){
+                me.layerIndexOffsetByAsyncLayers ++;
+            }
         });
     },
 
