@@ -81,8 +81,8 @@ b3p.Vbmap = function(){
      * openLink
      * Function to save the modifications/new feature to the database. Called when clicking on the link in the popup.
      */
-    this.openlink = function(){
-        var url = this.edit.generateURL();
+    this.openlink = function(id){
+        var url = this.edit.generateURL(id);
         window.open(url, '_parent');
     },
 

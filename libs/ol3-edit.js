@@ -49,22 +49,25 @@ ol.inherits(b3p.EditControl, ol.control.Control);
 /*
  *  Function to generate the URL to be called when clicked on the link in the popup. This function adds the geometry to the URL.
  */
-b3p.EditControl.prototype.generateURL = function(){
+b3p.EditControl.prototype.generateURL = function(id){
     var feature = this.featureOverlay.getSource().getFeatures()[0];
+    if(!id){
+        id = feature.properties[this.idProperty];
+    }
     var coords = feature.getGeometry().getCoordinates()
     var coordString = "&zLocX=" + coords[0].toFixed(2) + "&zLocY=" + coords[1].toFixed(2);
     var feature = this.activeFeature;
     var url = "";
     switch(this.mode){
         case "edit":
-            url =  this.replaceId(feature.properties[this.idProperty],this.editLink);
+            url =  this.replaceId(id,this.editLink);
             break
         case "new":
             url = this.createLink;
             break
         case "view":
         default:
-            url = this.replaceId(feature.properties[this.idProperty],this.viewLink);
+            url = this.replaceId(id,this.viewLink);
             break
     }
     url += "&type=" + this.type;
@@ -140,19 +143,19 @@ b3p.EditControl.prototype.getPopupText = function(){
 
 b3p.EditControl.prototype.getLink = function(result){
     var content = "";
-    var onclickhandlerOpen = 'onclick="vbmap.openlink()"';
+    var onclickhandlerOpen = 'onclick="vbmap.openlink(';
     var onclickhandlerGPS = 'onclick="vbmap.useGPS()"';
     switch(this.mode){
         case "edit":
-            content += '<br/><a ' + onclickhandlerOpen + ' href="#">Bewerk melding</a>';
+            content += '<br/><a ' + onclickhandlerOpen + result.properties[this.idProperty]+ ')" href="#">Bewerk melding</a>';
             this.setFeature(result);
             break
         case "new":
-            content += '<br/><a ' + onclickhandlerOpen + ' href="#">Maak</a>';
+            content += '<br/><a ' + onclickhandlerOpen + ')" href="#">Maak</a>';
             break
         case "view":
         default:
-            content += '<br/><a ' + onclickhandlerOpen + ' href="#">Bekijk melding</a>';
+            content += '<br/><a ' + onclickhandlerOpen + ')" href="#">Bekijk melding</a>';
             break
     }
     content += '<br/><a ' + onclickhandlerGPS + ' href="#">Gebruik GPS locatie</a>';

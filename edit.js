@@ -12,7 +12,7 @@ var config = {
       labelProperty : "zWeg",
       typeProperty: "zTypeRef",
       maxResults:3,
-      layerIndex: 5
+      layerIndex: 0
   },
   edit:{
         1 :{ 
@@ -32,15 +32,15 @@ var config = {
     {
       url: "http://www.openbasiskaart.nl/mapcache/tms/1.0.0/osm@rd/{z}/{x}/{-y}.png",
       label: "Openbasiskaart",
-      type: "TMS",
-      visible: true
+      type: "TMS"
     },
     {
       url: "https://geodata.nationaalgeoregister.nl/wmts/brtachtergrondkaart?request=GetCapabilities",
       label :"BRT",
       projection: "EPSG:28992",
       layer: "brtachtergrondkaart",
-      type: "WMTS"
+      type: "WMTS",
+      visible: true
     },
     {
       url: "http://webservices.gbo-provincies.nl/lufo/services/wms?",
@@ -64,7 +64,7 @@ var config = {
       visible: true
     },
     {
-      url: "http://mapserver.verkeersbeheer.nl/cgi-bin/mapserv.exe?map=c:\\maps\\verkeersbeheer.map",
+      url: "https://mapserver.verkeersbeheer.nl/cgi-bin/mapserv.exe?map=c:\\maps\\gelderland_acc.map",
       layers: ["meldingenFilter"],
       type: "WMS",
       label: "Meldingen",
@@ -76,7 +76,7 @@ var config = {
       layers: ["hectopunten"],
       type: "WMS",
       label: "hectopunten",
-      visible:true,
+      visible:false,
 	  opacity: 0.6
     }
     
