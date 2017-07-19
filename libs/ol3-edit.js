@@ -51,7 +51,7 @@ ol.inherits(b3p.EditControl, ol.control.Control);
  */
 b3p.EditControl.prototype.generateURL = function(id){
     var feature = this.featureOverlay.getSource().getFeatures()[0];
-    if(!id){
+    if(!id && this.mode !== "new"){
         id = feature.properties[this.idProperty];
     }
     var coords = feature.getGeometry().getCoordinates()
